@@ -61,7 +61,7 @@ a.tool.home{display:inline-flex;align-items:center;justify-content:center;text-d
     <p class="q" id="q"></p>
     <div class="choices" id="choices"></div>
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
-    <p id="vnote" hidden style="margin:0;text-align:center;font-size:1rem;color:var(--soft)">الصوت العربي عبر الإنترنت غير متاح حالياً. Voix arabe en ligne indisponible pour le moment.</p>
+    <p id="vnote" hidden style="margin:0;text-align:center;font-size:1rem;color:var(--soft)">تعذّر تحميل الصوت العربي. Vérifie ta connexion Internet puis réessaie.</p>
     <button class="big" id="next" hidden></button>
   </main>
   <section class="panel" id="end" hidden><h2 id="endT"></h2><ul class="badges" id="badges"></ul><button class="big" id="again" style="margin-top:16px"></button></section>
@@ -98,30 +98,31 @@ const t=()=>T[S.lang],pick=a=>a[Math.floor(Math.random()*a.length)];
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
-let remoteArabicAudio=null;
-let remoteArabicObjectUrl=null;
+let arabicTtsPromise=null;
+async function sayArabicOnline(text){
+  if(!arabicTtsPromise){
+    arabicTtsPromise=import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm')
+      .then(({NabraTTS})=>NabraTTS.load({dtype:'fp16'}))
+      .catch(error=>{arabicTtsPromise=null;throw error;});
+  }
+  const tts=await arabicTtsPromise;
+  await tts.speak(text);
+}
 async function say(text,silentMsg){
   if(typeof silentMsg==='undefined'||!silentMsg)$('msg').textContent=text;
   const note=$('vnote');note.hidden=true;
   if(!S.sound)return;
   if(S.lang==='ar'){
     if('speechSynthesis' in window)speechSynthesis.cancel();
-    if(remoteArabicAudio){remoteArabicAudio.pause();remoteArabicAudio.currentTime=0;}
-    if(remoteArabicObjectUrl){URL.revokeObjectURL(remoteArabicObjectUrl);remoteArabicObjectUrl=null;}
     try{
-      const response=await fetch('/api/speech',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
-      if(!response.ok){
-        let detail={};try{detail=await response.json();}catch(_){}
-        throw new Error(detail.code==='SPEECH_NOT_CONFIGURED'?'not-configured':'online-voice-unavailable');
-      }
-      const audioBlob=await response.blob();
-      remoteArabicObjectUrl=URL.createObjectURL(audioBlob);
-      remoteArabicAudio=new Audio(remoteArabicObjectUrl);
-      await remoteArabicAudio.play();
-    }catch(e){
-      note.textContent='الصوت العربي عبر الإنترنت غير متاح حالياً. Vérifie la configuration du service vocal en ligne.';
+      note.textContent='جارٍ تحميل الصوت العربي لأول مرة… Chargement initial de la voix arabe…';
       note.hidden=false;
-      console.warn('Arabic online speech failed:',e);
+      await sayArabicOnline(text);
+      note.hidden=true;
+    }catch(e){
+      note.textContent='تعذّر تحميل الصوت العربي. Vérifie ta connexion Internet puis réessaie.';
+      note.hidden=false;
+      console.warn('Arabic browser TTS failed:',e);
     }
     return;
   }
