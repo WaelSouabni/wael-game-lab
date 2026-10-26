@@ -122,80 +122,55 @@ async function sayArabicNative(text){
     });
   }catch(error){return false;}
 }
-async function sayArabicOnline(text){
-  // Arabic TTS runs through the site's Vercel function; the provider key never reaches the browser.
-  const chunks=[];
-  let remaining=String(text).trim();
-  while(remaining.length>300){
-    let cut=remaining.lastIndexOf(' ',300);
-    if(cut<120)cut=300;
-    chunks.push(remaining.slice(0,cut));
-    remaining=remaining.slice(cut).trim();
-  }
+let voiceRequestId=0, activeTtsController=null, activeTtsAudio=null;
+function stopCurrentVoice(){
+  if(activeTtsController){activeTtsController.abort();activeTtsController=null;}
+  if(activeTtsAudio){try{activeTtsAudio.pause();activeTtsAudio.currentTime=0;}catch(e){}activeTtsAudio=null;}
+  if('speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}
+}
+async function sayArabicOnline(text,requestId){
+  const chunks=[];let remaining=String(text).trim();
+  while(remaining.length>300){let cut=remaining.lastIndexOf(' ',300);if(cut<120)cut=300;chunks.push(remaining.slice(0,cut));remaining=remaining.slice(cut).trim();}
   if(remaining)chunks.push(remaining);
   for(const chunk of chunks){
-    let response;try{response=await fetch('/api/tts',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text:chunk})
-    });}catch(fetchError){if(await sayArabicNative(chunk))continue;throw fetchError;}
-    if(!response.ok){if(await sayArabicNative(chunk))continue;
-      let code='tts_provider_failed';
-      try{code=(await response.json()).error||code;}catch(e){}
-      const error=new Error(code);
-      error.code=code;
-      throw error;
-    }
-    const blob=await response.blob();
-    if(!blob.size)throw new Error('empty_audio');
-    const audioUrl=URL.createObjectURL(blob);
-    const audio=new Audio(audioUrl);
-    audio.preload='auto';
-    try{
-      await new Promise((resolve,reject)=>{
-        audio.addEventListener('ended',resolve,{once:true});
-        audio.addEventListener('error',()=>reject(new Error('audio_decode_failed')),{once:true});
-        audio.play().catch(reject);
-      });
-    }finally{
-      URL.revokeObjectURL(audioUrl);
-    }
+    if(requestId!==voiceRequestId)return false;
+    const controller=new AbortController();activeTtsController=controller;
+    let response;
+    try{response=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:chunk}),signal:controller.signal});}
+    catch(error){if(requestId!==voiceRequestId)return false;if(await sayArabicNative(chunk))continue;throw error;}
+    finally{if(activeTtsController===controller)activeTtsController=null;}
+    if(requestId!==voiceRequestId)return false;
+    if(!response.ok){if(await sayArabicNative(chunk))continue;let code='tts_provider_failed';try{code=(await response.json()).error||code;}catch(e){}const error=new Error(code);error.code=code;throw error;}
+    const blob=await response.blob();if(requestId!==voiceRequestId)return false;if(!blob.size)throw new Error('empty_audio');
+    const audioUrl=URL.createObjectURL(blob),audio=new Audio(audioUrl);audio.preload='auto';activeTtsAudio=audio;
+    try{await new Promise((resolve,reject)=>{audio.addEventListener('ended',resolve,{once:true});audio.addEventListener('error',()=>reject(new Error('audio_decode_failed')),{once:true});audio.play().catch(reject);});}
+    finally{if(activeTtsAudio===audio)activeTtsAudio=null;URL.revokeObjectURL(audioUrl);}
+    if(requestId!==voiceRequestId)return false;
   }
   return true;
 }
 async function say(text,silentMsg){
+  const requestId=++voiceRequestId;stopCurrentVoice();
   if(typeof silentMsg==='undefined'||!silentMsg)$('msg').textContent=text;
   const note=$('vnote');note.hidden=true;
   if(!S.sound)return;
   if(S.lang==='ar'){
-    if('speechSynthesis' in window)speechSynthesis.cancel();
     try{
-      note.textContent='جارٍ تحميل الصوت العربي لأول مرة… Chargement initial de la voix arabe…';
-      note.hidden=false;
-      const spoke=await sayArabicOnline(text);
-      if(spoke){note.hidden=true;}
-      else{
-        note.textContent='تم تجهيز الصوت العربي. اضغط على شكل أو زر داخل اللعبة لسماع الصوت. Voix arabe prête : clique sur un élément du jeu pour écouter.';
-        note.hidden=false;
-      }
+      const spoke=await sayArabicOnline(text,requestId);
+      if(requestId!==voiceRequestId)return;
+      if(spoke)note.hidden=true;
+      else{note.textContent='تم تجهيز الصوت العربي. اضغط على شكل أو زر داخل اللعبة لسماع الصوت. Voix arabe prête : clique sur un élément du jeu pour écouter.';note.hidden=false;}
     }catch(e){
-      if(e && (e.name==='NotAllowedError' || /user gesture|not allowed|play\(\) failed/i.test(String(e.message||'')))){
-        note.textContent='اضغط على زر داخل اللعبة لسماع الصوت العربي. Appuie sur un bouton du jeu pour activer la voix arabe.';
-      }else if(e && e.code==='tts_not_configured'){
-        note.textContent='الصوت العربي يحتاج إعداد الخدمة على الموقع. La clé du service vocal doit être configurée sur Vercel.';
-      }else{
-        note.textContent='تعذّر تشغيل الصوت العربي. Vérifie la configuration du service vocal puis réessaie.';
-      }
-      note.hidden=false;
-      console.warn('Arabic online TTS failed:',e);
+      if(requestId!==voiceRequestId)return;
+      if(e&&(e.name==='NotAllowedError'||/user gesture|not allowed|play\(\) failed/i.test(String(e.message||''))))note.textContent='اضغط على زر داخل اللعبة لسماع الصوت العربي. Appuie sur un bouton du jeu pour activer la voix arabe.';
+      else if(e&&e.code==='tts_not_configured')note.textContent='الصوت العربي يحتاج إعداد الخدمة على الموقع. La clé du service vocal doit être configurée sur Vercel.';
+      else note.textContent='تعذّر تشغيل الصوت العربي. Vérifie la configuration du service vocal puis réessaie.';
+      note.hidden=false;console.warn('Arabic online TTS failed:',e);
     }
     return;
   }
   if(!('speechSynthesis' in window))return;
-  try{
-    speechSynthesis.cancel();loadVoices();const v=voiceFor('fr');
-    const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang='fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);
-  }catch(e){}
+  try{loadVoices();const v=voiceFor('fr');const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang='fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}
 }
 function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
 $('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
