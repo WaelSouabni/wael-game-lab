@@ -95,14 +95,20 @@ let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
 let arabicTtsPromise=null;
+let arabicTtsReady=null;
 async function sayArabicOnline(text){
-  if(!arabicTtsPromise){
-    arabicTtsPromise=import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm')
-      .then(({NabraTTS})=>NabraTTS.load({dtype:'fp16'}))
-      .catch(error=>{arabicTtsPromise=null;throw error;});
+  if(!arabicTtsReady){
+    if(!arabicTtsPromise){
+      arabicTtsPromise=import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm')
+        .then(({NabraTTS})=>NabraTTS.load({dtype:'fp16'}))
+        .then(tts=>{arabicTtsReady=tts;return tts;})
+        .catch(error=>{arabicTtsPromise=null;throw error;});
+    }
+    await arabicTtsPromise;
+    return false;
   }
-  const tts=await arabicTtsPromise;
-  await tts.speak(text);
+  await arabicTtsReady.speak(text);
+  return true;
 }
 async function say(text,silentMsg){
   if(typeof silentMsg==='undefined'||!silentMsg)$('msg').textContent=text;
@@ -113,8 +119,12 @@ async function say(text,silentMsg){
     try{
       note.textContent='جارٍ تحميل الصوت العربي لأول مرة… Chargement initial de la voix arabe…';
       note.hidden=false;
-      await sayArabicOnline(text);
-      note.hidden=true;
+      const spoke=await sayArabicOnline(text);
+      if(spoke){note.hidden=true;}
+      else{
+        note.textContent='تم تجهيز الصوت العربي. اضغط على شكل أو زر داخل اللعبة لسماع الصوت. Voix arabe prête : clique sur un élément du jeu pour écouter.';
+        note.hidden=false;
+      }
     }catch(e){
       note.textContent='تعذّر تحميل الصوت العربي. Vérifie ta connexion Internet puis réessaie.';
       note.hidden=false;
