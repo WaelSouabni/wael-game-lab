@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Complète la suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff1d6;--band:#ffe0a3;--ink:#33274a;--soft:#6a5d82;--leaf:#2f8f55;--card:#ffffff;--sun:#ffc83d;--ring:#33274a;--thread:#d9822b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#2a2038;--band:#3b2e50;--ink:#f6efff;--soft:#c3b8da;--leaf:#5fcf88;--card:#3a2d4f;--sun:#ffd25e;--ring:#f6efff;--thread:#f0a45a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#2a2038;--band:#3b2e50;--ink:#f6efff;--soft:#c3b8da;--leaf:#5fcf88;--card:#3a2d4f;--sun:#ffd25e;--ring:#f6efff;--thread:#f0a45a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:760px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tools{display:flex;gap:8px}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.dots{display:flex;gap:8px}
+.dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--ink)}
+.dot.done{background:var(--leaf)}.dot.now{background:var(--sun)}
+.band{position:relative;background:var(--band);border-radius:28px;padding:22px 12px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.band::before{content:"";position:absolute;inset:50% 18px auto;height:6px;margin-top:-3px;background:var(--thread);border-radius:3px;opacity:.55}
+.cell{--s:clamp(50px,13vw,76px);position:relative;width:var(--s);height:var(--s);display:grid;place-items:center;border-radius:50%;background:var(--card);border:3px solid var(--ink);padding:7px}
+.cell svg{width:100%;height:100%}
+.cell.q{border-style:dashed;font-size:1.8rem;font-weight:700;color:var(--soft)}
+.cell.now{border-color:var(--sun);border-width:5px;animation:glow 1.2s infinite}
+.cell.wrong{animation:wob .4s}
+.cell.fill{animation:pop .4s}
+.choices{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:16px}
+.choice{width:clamp(76px,22vw,100px);height:clamp(76px,22vw,100px);border-radius:24px;border:3px solid var(--ink);background:var(--bg);padding:12px;transition:transform .12s}
+.choice:active{transform:scale(.92)}
+.choice svg{width:100%;height:100%;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
+.choice.hint{animation:pulse .8s 3;border-color:var(--sun);border-width:5px}
+.msg{font-size:1.35rem;font-weight:600;text-align:center;min-height:2.2em;margin:0}
+.big{display:block;margin:0 auto;border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#33274a;font-weight:700;font-size:1.4rem;padding:14px 32px;min-height:60px}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:18px;text-align:center}
+.badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0 0;padding:0;list-style:none}
+.badge{background:var(--band);border-radius:18px;padding:10px 14px;font-weight:600}
+.badge b{display:block;font-size:2rem}
+.badge small{display:block;color:var(--soft);font-weight:400}
+[hidden]{display:none!important}
+@keyframes pop{50%{transform:scale(1.2)}}
+@keyframes wob{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes glow{50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--sun) 50%,transparent)}}
+@keyframes pulse{50%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title"></h1>
+    <div class="tools"><button class="tool" id="snd" aria-pressed="true"></button><button class="tool" id="lang"></button></div>
+  </header>
+  <div class="dots" id="dots" role="img"></div>
+  <main id="game" style="display:flex;flex-direction:column;gap:16px">
+    <div class="band" id="band"></div>
+    <div class="choices" id="choices"></div>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <p id="vnote" hidden style="margin:0;text-align:center;font-size:1rem;color:var(--soft)">لا يوجد صوت عربي على هذا الجهاز. Pas de voix arabe sur cet appareil : installe-la dans Réglages, Synthèse vocale.</p>
+    <button class="big" id="next" hidden></button>
+  </main>
+  <section class="panel" id="end" hidden>
+    <h2 id="endT"></h2>
+    <ul class="badges" id="badges"></ul>
+    <button class="big" id="again" style="margin-top:16px"></button>
+  </section>
+</div>
+<script>
+// LOGIC-START
+const PALETTE=[{shape:'circle',color:'#ef5f67'},{shape:'square',color:'#2bb3c0'},{shape:'star',color:'#f5a623'},{shape:'heart',color:'#ee7fb5'},{shape:'triangle',color:'#5cb85c'},{shape:'circle',color:'#a56bd1'}];
+const UNITS=[[0,1],[0,0,1],[0,1,2],[0,1,1],[0,1,2,1]];
+const TOTAL_LEVELS=5;
+function shuffle(a,rng){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function buildPattern(n,rng){rng=rng||Math.random;const unit=UNITS[n-1];const k=Math.max.apply(null,unit)+1;
+const syms=shuffle(PALETTE,rng).slice(0,k+1).map(s=>({shape:s.shape,color:s.color,key:s.shape+'-'+s.color}));
+const total=unit.length*2+1,hidden=n>=4?2:1;
+const seq=Array.from({length:total},(_,i)=>syms[unit[i%unit.length]]);
+return{seq,start:total-hidden,choices:shuffle(syms,rng)};}
+function isCorrect(p,idx,key){return p.seq[idx].key===key;}
+function needsHint(e){return e>=2;}
+function badgesFor(s){const b=[];if(s.errors>=3)b.push('perseverant');if(s.errors===0&&s.hints===0)b.push('observer');return b;}
+function finalBadges(done){return done>=TOTAL_LEVELS?['master']:[];}
+// LOGIC-END
+
+const T={
+fr:{title:'Complète la suite',sound:'Son',next:'Suite',again:'Rejouer',endT:'Bravo, tu sais compléter toutes les suites !',
+ hello:'Quelle forme vient ensuite ? Touche-la.',
+ ok:['Bravo !','Super !','Bien joué !','Tu as trouvé !'],
+ retry:['Regarde bien la suite, tu y es presque !','Pas celle-là. Essaie encore !','On réessaie ensemble !'],
+ hint:'Regarde, cette forme brille !',levelDone:'Suite complète, tu es formidable !',lvl:'Niveau',of:'sur',
+ badges:{perseverant:['💪','Persévérant','Tu as continué jusqu’au bout.'],observer:['🔍','Observateur','Tu as tout trouvé du premier coup.'],master:['🌈','Maître des suites','Tu as fini les 5 niveaux.']}},
+ar:{title:'أكمل السلسلة',sound:'الصوت',next:'التالي',again:'العب مرة أخرى',endT:'أحسنت، أكملت كل السلاسل!',
+ hello:'ما الشكل التالي؟ المسه.',
+ ok:['أحسنت!','رائع!','ممتاز!','لقد وجدته!'],
+ retry:['انظر جيداً إلى السلسلة، أنت قريب جداً!','ليس هذا الشكل. حاول مرة أخرى!','لنحاول معاً!'],
+ hint:'انظر، هذا الشكل يلمع!',levelDone:'السلسلة كاملة، أنت رائع!',lvl:'المستوى',of:'من',
+ badges:{perseverant:['💪','مثابر','واصلت حتى النهاية.'],observer:['🔍','مراقب ذكي','وجدت كل شيء من أول مرة.'],master:['🌈','سيد السلاسل','أنهيت المستويات الخمسة.']}}
+};
+const PATHS={circle:'<circle cx="50" cy="50" r="42"/>',square:'<rect x="9" y="9" width="82" height="82" rx="14"/>',
+triangle:'<polygon points="50,8 94,88 6,88" stroke-linejoin="round"/>',
+star:'<polygon points="50,6 62,38 96,38 68,58 79,92 50,71 21,92 32,58 4,38 38,38" stroke-linejoin="round"/>',
+heart:'<path d="M50 88C14 62 6 40 18 24c10-12 25-8 32 4 7-12 22-16 32-4 12 16 4 38-32 64z"/>'};
+const NAMES={fr:{circle:'rond',square:'carré',triangle:'triangle',star:'étoile',heart:'cœur'},ar:{circle:'دائرة',square:'مربع',triangle:'مثلث',star:'نجمة',heart:'قلب'}};
+const $=id=>document.getElementById(id);
+const S={lang:'fr',sound:true,level:1,p:null,idx:0,errors:0,hints:0,errAt:0,badges:new Set(),done:0,last:-1};
+try{const l=localStorage.getItem('cls-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+const t=()=>T[S.lang];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const svg=s=>`<svg viewBox="0 0 100 100" aria-hidden="true" fill="${s.color}" stroke="rgba(0,0,0,.25)" stroke-width="3">${PATHS[s.shape]}</svg>`;
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+function say(text){$('msg').textContent=text;const note=$('vnote');note.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
+try{speechSynthesis.cancel();const v=voiceFor(S.lang);
+if(S.lang==='ar'&&!v&&VOICES.length){note.hidden=false;return;}
+const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}}
+function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
+$('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
+$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('next').textContent=t().next;$('again').textContent=t().again;$('endT').textContent=t().endT;document.title=t().title;}
+function renderDots(){$('dots').setAttribute('aria-label',`${t().lvl} ${S.level} ${t().of} ${TOTAL_LEVELS}`);
+$('dots').innerHTML=Array.from({length:TOTAL_LEVELS},(_,i)=>`<span class="dot ${i+1<S.level?'done':i+1===S.level?'now':''}"></span>`).join('');}
+function render(){const p=S.p;
+$('band').innerHTML=p.seq.map((s,i)=>i<p.start||i<S.idx?`<div class="cell ${i===S.last?'fill':''}" data-i="${i}">${svg(s)}</div>`:`<div class="cell q ${i===S.idx?'now':''}" data-i="${i}" aria-label="?">?</div>`).join('');
+$('choices').innerHTML=p.choices.map(c=>`<button class="choice" data-key="${c.key}" aria-label="${NAMES[S.lang][c.shape]}">${svg(c)}</button>`).join('');}
+function startLevel(n){S.level=n;S.p=buildPattern(n);S.idx=S.p.start;S.errors=0;S.hints=0;S.errAt=0;S.last=-1;
+$('next').hidden=true;$('end').hidden=true;$('game').hidden=false;renderDots();render();say(t().hello);}
+function choose(key){if(S.idx>=S.p.seq.length)return;
+if(isCorrect(S.p,S.idx,key)){S.last=S.idx;S.idx++;S.errAt=0;render();
+ if(S.idx>=S.p.seq.length)finishLevel();else say(pick(t().ok));}
+else{S.errors++;S.errAt++;const c=document.querySelector(`.cell[data-i="${S.idx}"]`);if(c){c.classList.add('wrong');setTimeout(()=>c.classList.remove('wrong'),500);}
+ if(needsHint(S.errAt)){S.hints++;const g=document.querySelector(`.choice[data-key="${S.p.seq[S.idx].key}"]`);if(g)g.classList.add('hint');say(t().hint);}else say(pick(t().retry));}}
+function finishLevel(){S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
+if(S.level>=TOTAL_LEVELS){finalBadges(S.done).forEach(b=>S.badges.add(b));showEnd();return;}
+say(t().levelDone);$('next').hidden=false;$('next').focus();}
+function showEnd(){$('game').hidden=true;$('end').hidden=false;
+$('badges').innerHTML=[...S.badges].map(k=>{const b=t().badges[k];return `<li class="badge"><b>${b[0]}</b>${b[1]}<small>${b[2]}</small></li>`;}).join('');say(t().endT);}
+$('choices').addEventListener('click',e=>{const b=e.target.closest('.choice');if(b)choose(b.dataset.key);});
+$('next').addEventListener('click',()=>startLevel(S.level+1));
+$('again').addEventListener('click',()=>{S.badges=new Set();S.done=0;startLevel(1);});
+$('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('cls-lang',S.lang);}catch(e){}applyLang();if(!$('end').hidden)showEnd();else{renderDots();render();say(t().hello);}});
+applyLang();startLevel(1);
+</script>
+</body>
+</html>
