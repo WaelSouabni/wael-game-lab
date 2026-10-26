@@ -102,7 +102,7 @@ try{
   if(S.lang==='ar'){
     if('speechSynthesis' in window)speechSynthesis.cancel();
     if(remoteArabicAudio){remoteArabicAudio.pause();remoteArabicAudio.currentTime=0;}
-    const url='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&ttsspeed=0.85&q='+encodeURIComponent(text);
+    const url='https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ar&total=1&idx=0&textlen='+encodeURIComponent(text.length)+'&q='+encodeURIComponent(text);
     remoteArabicAudio=new Audio(url);
     remoteArabicAudio.play().catch(()=>{fallbackArabicSpeech(text,note);});
     remoteArabicAudio.onerror=()=>fallbackArabicSpeech(text,note);
