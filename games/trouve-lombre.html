@@ -94,9 +94,29 @@ const t=()=>T[S.lang],pick=a=>a[Math.floor(Math.random()*a.length)];
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
-function say(text){$('msg').textContent=text;const n=$('vnote');n.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
-try{speechSynthesis.cancel();loadVoices();const v=voiceFor(S.lang);if(S.lang==='ar'&&!v){n.hidden=false;}
-const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}}
+let remoteArabicAudio=null;
+function say(text){if(!silentMsg)$('msg').textContent=text;const note=$('vnote');note.hidden=true;if(!S.sound)return;
+try{
+  if(S.lang==='ar'){
+    if('speechSynthesis' in window)speechSynthesis.cancel();
+    if(remoteArabicAudio){remoteArabicAudio.pause();remoteArabicAudio.currentTime=0;}
+    const url='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&ttsspeed=0.85&q='+encodeURIComponent(text);
+    remoteArabicAudio=new Audio(url);
+    remoteArabicAudio.play().catch(()=>{fallbackArabicSpeech(text,note);});
+    remoteArabicAudio.onerror=()=>fallbackArabicSpeech(text,note);
+    return;
+  }
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();loadVoices();const v=voiceFor('fr');
+  const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang='fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);
+}catch(e){if(S.lang==='ar')fallbackArabicSpeech(text,note);}
+}
+function fallbackArabicSpeech(text,note){
+  if(!('speechSynthesis' in window))return;
+  try{loadVoices();const v=voiceFor('ar');if(!v){note.hidden=false;return;}
+    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=.9;u.pitch=1.1;speechSynthesis.speak(u);
+  }catch(e){}
+}
 function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
 $('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
 $('lang').textContent=S.lang==='fr'?'العربية':'Français';$('next').textContent=t().next;$('again').textContent=t().again;$('endT').textContent=t().endT;$('tq').textContent=t().tq;document.title=t().title;}
