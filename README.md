@@ -2,7 +2,7 @@
 
 Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et en arabe** : observation, logique, nombres, lettres, routines, émotions et confiance en soi.
 
-**Sans publicité, sans compte, sans chat.** Chaque jeu est une simple page HTML : aucun serveur, aucune installation.
+**Sans publicité, sans compte enfant, sans chat et sans installation sur l'appareil.** Les jeux sont des pages HTML ; la voix arabe en ligne passe par une fonction sécurisée hébergée sur Vercel.
 
 👉 **Jouer** : ouvrir [`index.html`](index.html) (ou la page GitHub Pages, voir plus bas).
 
@@ -30,7 +30,16 @@ Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et 
 - **Tactile d'abord** : gros boutons, utilisable aussi au clavier, mode sombre, animations réduites si l'appareil le demande.
 - **Bilingue** : français et arabe (lecture de droite à gauche), avec une voix qui lit les consignes.
 
-> La voix utilise la synthèse vocale du navigateur : une voix arabe doit être installée sur l'appareil. À terme, des voix enregistrées en arabe tunisien et en français remplaceront la synthèse.
+> **Voix arabe en ligne :** sur Vercel, les consignes arabes sont générées par l'API TTS de Munsit. La clé reste côté serveur (`MUNSIT_API_KEY`) et n'est jamais exposée dans le navigateur. GitHub Pages seul ne peut pas exécuter cette fonction serveur : pour la voix arabe en ligne, utiliser le déploiement Vercel.
+
+### Configurer la voix arabe sur Vercel
+
+1. Créer une clé API gratuite sur [Munsit](https://app.munsit.com/) (10 000 crédits offerts, sans carte bancaire au moment de la rédaction).
+2. Dans Vercel → projet **wael-game-lab** → **Settings → Environment Variables**, ajouter `MUNSIT_API_KEY` avec la clé, pour **Production** et **Preview**.
+3. Redéployer le projet pour appliquer la variable.
+4. Tester un jeu en arabe et toucher un bouton du jeu pour déclencher la lecture.
+
+Ne jamais mettre la clé dans un fichier HTML, GitHub ou du JavaScript côté navigateur.
 
 > Ces jeux sont un outil ludique de découverte. Ils ne remplacent pas l'avis d'un professionnel et ne posent aucun diagnostic.
 
