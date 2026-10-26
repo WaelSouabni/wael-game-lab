@@ -148,7 +148,7 @@ const h=fs.readFileSync(path.join(__dirname,'..','games','menu-accueil.html'),'u
 const code=h.split('// LOGIC-START')[1].split('// LOGIC-END')[0];
 const X=new Function(code+';return{GAMES,GROUPS,AVATARS,IDS,cleanVisited,markVisited,cleanProfile};')();
 let n=0;const t=(m,f)=>{f();n++;console.log('ok -',m)};
-t('9 jeux, ids uniques',()=>{assert.equal(X.GAMES.length,9);assert.equal(new Set(X.IDS).size,9)});
+t('13 jeux, ids uniques',()=>{assert.equal(X.GAMES.length,13);assert.equal(new Set(X.IDS).size,9)});
 t('chaque jeu a un lien d’artefact, un emoji, une couleur et des textes FR+AR',()=>X.GAMES.forEach(g=>{assert.match(g.u,/^[a-z-]+\.html$/);assert.ok(require('fs').existsSync(path.join(__dirname,'..','games',g.u)),'fichier manquant : '+g.u);assert.ok(g.e&&g.c);assert.equal(g.fr.length,2);assert.equal(g.ar.length,2);g.fr.concat(g.ar).forEach(x=>assert.ok(x))}));
 t('liens tous différents',()=>assert.equal(new Set(X.GAMES.map(g=>g.u)).size,9));
 t('chaque jeu appartient à un groupe existant, aucun groupe vide',()=>{X.GAMES.forEach(g=>assert.ok(g.g>=0&&g.g<X.GROUPS.length));X.GROUPS.forEach((_,i)=>assert.ok(X.GAMES.some(g=>g.g===i)))});
