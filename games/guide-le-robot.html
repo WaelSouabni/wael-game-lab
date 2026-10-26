@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guide le petit robot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e4edff;--floor:#cddcff;--ink:#27294d;--soft:#5a5f8a;--leaf:#2f8f55;--card:#ffffff;--sun:#ffc83d;--ring:#27294d;--rock:#aab3d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#141c33;--floor:#1f2b4d;--ink:#eef1ff;--soft:#b3b9dd;--leaf:#5fcf88;--card:#222e52;--sun:#ffd25e;--ring:#eef1ff;--rock:#3a4775}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#141c33;--floor:#1f2b4d;--ink:#eef1ff;--soft:#b3b9dd;--leaf:#5fcf88;--card:#222e52;--sun:#ffd25e;--ring:#eef1ff;--rock:#3a4775}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:620px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tools{display:flex;gap:8px}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.dots{display:flex;gap:8px}
+.dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--ink)}
+.dot.done{background:var(--leaf)}.dot.now{background:var(--sun)}
+.board{display:grid;grid-template-columns:repeat(var(--w),var(--c));--c:min(76px,calc((100vw - 80px)/var(--w)));gap:6px;justify-content:center;background:var(--floor);border-radius:28px;padding:14px}
+.c{width:var(--c);height:var(--c);border-radius:14px;background:var(--card);display:grid;place-items:center;font-size:calc(var(--c)*.6);line-height:1}
+.c.rock{background:var(--rock)}
+.c.goal{background:color-mix(in srgb,var(--sun) 40%,var(--card))}
+.c.trail::after{content:"";width:30%;height:30%;border-radius:50%;background:var(--sun);border:3px solid var(--ink);position:absolute}
+.c.trail{position:relative}
+.c.bot{animation:pop .3s}
+.prog{display:flex;flex-wrap:wrap;gap:6px;min-height:58px;background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:8px;align-items:center}
+.step{width:44px;height:44px;border-radius:12px;background:var(--floor);display:grid;place-items:center;font-size:1.6rem;font-weight:700}
+.pad{display:grid;grid-template-columns:repeat(3,76px);grid-template-areas:". up ." "left down right";gap:10px;justify-content:center}
+.arrow{height:76px;border-radius:22px;border:4px solid var(--ink);background:var(--card);font-size:2.4rem;font-weight:700;line-height:1}
+.arrow:active{transform:scale(.92)}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{min-height:56px;border-radius:20px;border:4px solid var(--ink);background:var(--card);font-weight:700;font-size:1.2rem;padding:0 20px}
+.go{background:var(--sun);color:#27294d;font-size:1.5rem;padding:0 34px}
+.btn:disabled,.arrow:disabled{opacity:.5;cursor:default}
+.msg{font-size:1.35rem;font-weight:600;text-align:center;min-height:2.2em;margin:0}
+.big{display:block;margin:0 auto;border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#27294d;font-weight:700;font-size:1.4rem;padding:14px 32px;min-height:60px}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:18px;text-align:center}
+.badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0 0;padding:0;list-style:none}
+.badge{background:var(--floor);border-radius:18px;padding:10px 14px;font-weight:600}
+.badge b{display:block;font-size:2rem}
+.badge small{display:block;color:var(--soft);font-weight:400}
+[hidden]{display:none!important}
+@keyframes pop{50%{transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title"></h1>
+    <div class="tools"><button class="tool" id="snd" aria-pressed="true"></button><button class="tool" id="lang"></button></div>
+  </header>
+  <div class="dots" id="dots" role="img"></div>
+  <main id="game" style="display:flex;flex-direction:column;gap:14px">
+    <div class="board" id="board" dir="ltr"></div>
+    <div class="prog" id="prog" aria-live="polite"></div>
+    <div class="pad" id="pad" dir="ltr"></div>
+    <div class="actions">
+      <button class="btn" id="undo"></button><button class="btn" id="clear"></button><button class="btn go" id="run"></button>
+    </div>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <p id="vnote" hidden style="margin:0;text-align:center;font-size:1rem;color:var(--soft)">لا يوجد صوت عربي على هذا الجهاز. Pas de voix arabe sur cet appareil : installe-la dans Réglages, Synthèse vocale.</p>
+    <button class="big" id="next" hidden></button>
+  </main>
+  <section class="panel" id="end" hidden>
+    <h2 id="endT"></h2>
+    <ul class="badges" id="badges"></ul>
+    <button class="big" id="again" style="margin-top:16px"></button>
+  </section>
+</div>
+<script>
+// LOGIC-START
+const DIRS=[[0,-1],[0,1],[-1,0],[1,0]];
+const LEVELS=[
+{w:3,h:3,start:{x:0,y:1},goal:{x:2,y:1},rocks:[]},
+{w:3,h:3,start:{x:0,y:0},goal:{x:2,y:2},rocks:[]},
+{w:4,h:4,start:{x:0,y:3},goal:{x:3,y:0},rocks:[{x:1,y:2},{x:2,y:1}]},
+{w:4,h:4,start:{x:0,y:0},goal:{x:3,y:3},rocks:[{x:1,y:0},{x:1,y:1},{x:2,y:2}]},
+{w:5,h:5,start:{x:0,y:4},goal:{x:4,y:0},rocks:[{x:1,y:4},{x:1,y:3},{x:3,y:1},{x:3,y:2},{x:2,y:2}]}];
+const TOTAL_LEVELS=LEVELS.length,MAX_STEPS=12;
+function blocked(L,x,y){return x<0||y<0||x>=L.w||y>=L.h||L.rocks.some(r=>r.x===x&&r.y===y);}
+function simulate(L,prog){let p={x:L.start.x,y:L.start.y};const path=[{x:p.x,y:p.y}];
+for(const d of prog){const x=p.x+DIRS[d][0],y=p.y+DIRS[d][1];
+ if(blocked(L,x,y))return{path,status:'bump',pos:p};
+ p={x,y};path.push(p);if(x===L.goal.x&&y===L.goal.y)return{path,status:'goal',pos:p};}
+return{path,status:'short',pos:p};}
+function solve(L){const key=p=>p.x+','+p.y,seen=new Set([key(L.start)]);const q=[{p:L.start,m:[]}];
+while(q.length){const{p,m}=q.shift();if(p.x===L.goal.x&&p.y===L.goal.y)return m;
+ for(let d=0;d<4;d++){const n={x:p.x+DIRS[d][0],y:p.y+DIRS[d][1]};if(blocked(L,n.x,n.y)||seen.has(key(n)))continue;seen.add(key(n));q.push({p:n,m:m.concat(d)});}}
+return null;}
+function needsHint(f){return f>=2;}
+function badgesFor(s){const b=[];if(s.fails>=3)b.push('perseverant');if(s.fails===0&&s.hints===0)b.push('observer');return b;}
+function finalBadges(done){return done>=TOTAL_LEVELS?['coder']:[];}
+// LOGIC-END
+
+const T={
+fr:{title:'Guide le petit robot',sound:'Son',next:'Suite',again:'Rejouer',endT:'Bravo, tu sais bien commander le robot !',
+ undo:'Effacer une flèche',clear:'Tout effacer',run:'Go !',
+ hello:'Touche des flèches pour mener le robot jusqu’à l’étoile, puis touche Go.',
+ ok:'Bravo, le robot a trouvé l’étoile !',
+ retry:['Presque ! Change tes flèches et on réessaie.','Le robot n’y est pas encore. Essaie un autre chemin !','On réessaie ensemble !'],
+ bump:'Aïe, le robot est bloqué ! Change tes flèches.',
+ hint:'Regarde les points jaunes : c’est un chemin possible.',empty:'Touche d’abord des flèches.',levelDone:'Niveau réussi, tu es formidable !',lvl:'Niveau',of:'sur',
+ dirs:['haut','bas','gauche','droite'],
+ badges:{perseverant:['💪','Persévérant','Tu as continué jusqu’au bout.'],observer:['🔍','Observateur','Tu as réussi du premier coup.'],coder:['💻','Petit programmeur','Tu as fini les 5 niveaux.']}},
+ar:{title:'وجّه الروبوت الصغير',sound:'الصوت',next:'التالي',again:'العب مرة أخرى',endT:'أحسنت، تعرف كيف توجّه الروبوت!',
+ undo:'امسح سهماً',clear:'امسح الكل',run:'هيا!',
+ hello:'المس الأسهم لتوصل الروبوت إلى النجمة، ثم المس هيا.',
+ ok:'أحسنت، وجد الروبوت النجمة!',
+ retry:['تقريباً! غيّر الأسهم ولنحاول مجدداً.','لم يصل الروبوت بعد. جرّب طريقاً آخر!','لنحاول معاً!'],
+ bump:'آه، الروبوت متوقف! غيّر الأسهم.',
+ hint:'انظر إلى النقاط الصفراء: هذا طريق ممكن.',empty:'المس بعض الأسهم أولاً.',levelDone:'نجحت في المستوى، أنت رائع!',lvl:'المستوى',of:'من',
+ dirs:['أعلى','أسفل','يسار','يمين'],
+ badges:{perseverant:['💪','مثابر','واصلت حتى النهاية.'],observer:['🔍','مراقب ذكي','نجحت من أول مرة.'],coder:['💻','مبرمج صغير','أنهيت المستويات الخمسة.']}}
+};
+const GLY=['↑','↓','←','→'],AREA=['up','down','left','right'];
+const $=id=>document.getElementById(id);
+const S={lang:'fr',sound:true,level:1,prog:[],running:false,fails:0,hints:0,pos:null,trail:null,badges:new Set(),done:0};
+try{const l=localStorage.getItem('rob-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+const t=()=>T[S.lang],L=()=>LEVELS[S.level-1];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+function say(text){$('msg').textContent=text;const note=$('vnote');note.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
+try{speechSynthesis.cancel();const v=voiceFor(S.lang);
+if(S.lang==='ar'&&!v&&VOICES.length){note.hidden=false;return;}
+const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}}
+function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
+$('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
+$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('next').textContent=t().next;$('again').textContent=t().again;$('endT').textContent=t().endT;
+$('undo').textContent='⌫ '+t().undo;$('clear').textContent=t().clear;$('run').textContent='▶ '+t().run;document.title=t().title;}
+function renderDots(){$('dots').setAttribute('aria-label',`${t().lvl} ${S.level} ${t().of} ${TOTAL_LEVELS}`);
+$('dots').innerHTML=Array.from({length:TOTAL_LEVELS},(_,i)=>`<span class="dot ${i+1<S.level?'done':i+1===S.level?'now':''}"></span>`).join('');}
+function render(){const l=L(),b=$('board');b.style.setProperty('--w',l.w);let h='';
+for(let y=0;y<l.h;y++)for(let x=0;x<l.w;x++){const rock=l.rocks.some(r=>r.x===x&&r.y===y),goal=l.goal.x===x&&l.goal.y===y,bot=S.pos.x===x&&S.pos.y===y;
+const tr=S.trail&&S.trail.some(p=>p.x===x&&p.y===y)&&!bot&&!goal;
+h+=`<div class="c ${rock?'rock':''} ${goal?'goal':''} ${tr?'trail':''} ${bot?'bot':''}">${bot?'🤖':rock?'🪨':goal?'⭐':''}</div>`;}
+b.innerHTML=h;
+$('prog').innerHTML=S.prog.map(d=>`<span class="step" aria-label="${t().dirs[d]}">${GLY[d]}</span>`).join('');
+$('pad').innerHTML=GLY.map((g,d)=>`<button class="arrow" style="grid-area:${AREA[d]}" data-d="${d}" aria-label="${t().dirs[d]}" ${S.running?'disabled':''}>${g}</button>`).join('');
+['undo','clear','run'].forEach(k=>$(k).disabled=S.running);}
+function startLevel(n){S.level=n;S.prog=[];S.fails=0;S.hints=0;S.running=false;S.trail=null;S.pos={...L().start};
+$('next').hidden=true;$('end').hidden=true;$('game').hidden=false;renderDots();render();say(t().hello);}
+async function run(){if(S.running)return;if(!S.prog.length){say(t().empty);return;}
+S.running=true;S.trail=null;render();const r=simulate(L(),S.prog);
+for(const p of r.path.slice(1)){await sleep(420);S.pos=p;render();}
+if(r.status==='goal'){S.running=false;render();finishLevel();return;}
+S.fails++;await sleep(500);
+if(r.status==='bump')say(t().bump);else say(pick(t().retry));
+await sleep(700);S.pos={...L().start};S.running=false;
+if(needsHint(S.fails)){S.hints++;const m=solve(L());S.trail=simulate(L(),m).path;render();say(t().hint);setTimeout(()=>{S.trail=null;if(!S.running)render();},3500);}else render();}
+function finishLevel(){S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
+if(S.level>=TOTAL_LEVELS){finalBadges(S.done).forEach(b=>S.badges.add(b));say(t().ok);setTimeout(showEnd,1500);return;}
+say(t().ok+' '+t().levelDone);$('next').hidden=false;$('next').focus();}
+function showEnd(){$('game').hidden=true;$('end').hidden=false;
+$('badges').innerHTML=[...S.badges].map(k=>{const b=t().badges[k];return `<li class="badge"><b>${b[0]}</b>${b[1]}<small>${b[2]}</small></li>`;}).join('');say(t().endT);}
+$('pad').addEventListener('click',e=>{const b=e.target.closest('.arrow');if(!b||S.running||S.prog.length>=MAX_STEPS)return;S.prog.push(+b.dataset.d);render();});
+$('undo').addEventListener('click',()=>{S.prog.pop();render();});
+$('clear').addEventListener('click',()=>{S.prog=[];render();});
+$('run').addEventListener('click',run);
+$('next').addEventListener('click',()=>startLevel(S.level+1));
+$('again').addEventListener('click',()=>{S.badges=new Set();S.done=0;startLevel(1);});
+$('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('rob-lang',S.lang);}catch(e){}applyLang();if(!$('end').hidden)showEnd();else{renderDots();render();say(t().hello);}});
+applyLang();startLevel(1);
+</script>
+</body>
+</html>

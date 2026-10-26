@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon petit coin de jeux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f1ff;--ink:#2a2038;--soft:#6a5d82;--card:#ffffff;--sun:#ffc83d;--ring:#2a2038;--leaf:#2f8f55;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#17142a;--ink:#f3eefc;--soft:#b9b0cf;--card:#241f3d;--sun:#ffd25e;--ring:#f3eefc;--leaf:#5fcf88}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#17142a;--ink:#f3eefc;--soft:#b9b0cf;--card:#241f3d;--sun:#ffd25e;--ring:#f3eefc;--leaf:#5fcf88}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button,[dir=rtl] input{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:760px;margin:0 auto;padding:14px 16px 32px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.hello{display:flex;align-items:center;gap:14px;background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:14px 18px}
+.hello .av{font-size:3.4rem;line-height:1}
+.hello p{margin:0;font-size:1.35rem;font-weight:700;flex:1}
+.hello small{display:block;font-weight:500;color:var(--soft);font-size:.95rem}
+.setup{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:18px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.avs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.avb{width:64px;height:64px;font-size:2.2rem;border-radius:20px;border:4px solid var(--ink);background:var(--bg);padding:0}
+.avb[aria-pressed=true]{background:var(--sun);transform:scale(1.08)}
+input{width:100%;max-width:300px;height:54px;border-radius:16px;border:3px solid var(--ink);background:var(--bg);padding:0 14px;font-size:1.2rem;text-align:center}
+.big{border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#2a2038;font-weight:700;font-size:1.3rem;padding:12px 30px;min-height:56px}
+h2{margin:0 0 10px;font-size:1.3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.g{position:relative;display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-decoration:none;color:#2a2038;border:4px solid var(--ink);border-radius:24px;padding:14px 16px;min-height:132px;background:var(--c)}
+.g:active{transform:scale(.96)}
+.g span{font-size:2.6rem;line-height:1}
+.g b{font-size:1.15rem;line-height:1.2}
+.g small{font-size:.92rem;font-weight:500;color:#4b3e63}
+.g i{position:absolute;top:8px;inset-inline-end:10px;background:var(--leaf);color:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-style:normal;font-weight:700}
+.note{margin:0;font-size:.92rem;color:var(--soft);text-align:center}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><button class="tool" id="lang"></button></header>
+  <section class="setup" id="setup" hidden>
+    <p style="margin:0;font-size:1.4rem;font-weight:700" id="sq"></p>
+    <div class="avs" id="avs" role="group"></div>
+    <label for="nm" id="sl" style="font-weight:600"></label>
+    <input id="nm" maxlength="12" autocomplete="off">
+    <button class="big" id="ok"></button>
+  </section>
+  <section class="hello" id="hello" hidden><span class="av" id="hav"></span><p id="hmsg"></p><button class="tool" id="edit" aria-label="✏️">✏️</button></section>
+  <main id="menu"></main>
+  <p class="note" id="adult"></p>
+</div>
+<script>
+// LOGIC-START
+const BASE='';
+const GAMES=[
+{id:'formes',g:0,c:'#c7ebe6',e:'🌷',u:BASE+'jardin-des-formes.html',fr:['Le jardin des formes','Observer et classer'],ar:['حديقة الأشكال','أراقب وأصنّف']},
+{id:'suite',g:0,c:'#ffe0a3',e:'🌈',u:BASE+'complete-la-suite.html',fr:['Complète la suite','Trouver ce qui vient après'],ar:['أكمل السلسلة','أجد ما يأتي بعد']},
+{id:'robot',g:0,c:'#cddcff',e:'🤖',u:BASE+'guide-le-robot.html',fr:['Guide le petit robot','Logique et programmation'],ar:['وجّه الروبوت الصغير','منطق وبرمجة']},
+{id:'ombre',g:0,c:'#d8c9ff',e:'🕵️',u:BASE+'trouve-lombre.html',fr:['Trouve l’ombre','Bien observer'],ar:['اعثر على الظل','ملاحظة دقيقة']},
+{id:'compte',g:1,c:'#d3eb9a',e:'🔢',u:BASE+'compte-les-objets.html',fr:['Compte les objets','Compter jusqu’à 10'],ar:['عُدّ الأشياء','العدّ حتى 10']},
+{id:'lettres',g:1,c:'#b5e6f2',e:'🔤',u:BASE+'les-lettres.html',fr:['Les lettres','Lettres françaises et arabes'],ar:['الحروف','حروف عربية وفرنسية']},
+{id:'ordre',g:2,c:'#c6ebcd',e:'⏰',u:BASE+'ma-journee-dans-lordre.html',fr:['Ma journée dans l’ordre','Routines et temps'],ar:['يومي بالترتيب','الروتين والوقت']},
+{id:'humeur',g:2,c:'#fbd3cb',e:'😊',u:BASE+'mon-humeur-du-jour.html',fr:['Mon humeur du jour','Mettre des mots sur ses émotions'],ar:['مزاجي اليوم','التعبير عن مشاعري']},
+{id:'compliments',g:2,c:'#ffe49a',e:'🎁',u:BASE+'la-boite-a-compliments.html',fr:['La boîte à compliments','Découvrir ses forces'],ar:['صندوق المجاملات','اكتشاف نقاط قوتي']}];
+const GROUPS=[['🧩 Logique et observation','🧩 المنطق والملاحظة'],['🔢 Nombres et lettres','🔢 الأرقام والحروف'],['💛 Vie, émotions et confiance','💛 الحياة والمشاعر والثقة']];
+const AVATARS=['🦊','🐼','🦁','🐯','🐰','🐸','🦄','🐙'];
+const IDS=GAMES.map(g=>g.id);
+function cleanVisited(a){return Array.isArray(a)?a.filter((x,i)=>IDS.includes(x)&&a.indexOf(x)===i):[];}
+function markVisited(list,id){return IDS.includes(id)&&!list.includes(id)?list.concat(id):list;}
+function cleanProfile(p){if(!p||typeof p!=='object')return null;const a=AVATARS.includes(p.a)?p.a:AVATARS[0];
+const n=String(p.n||'').replace(/[<>&"'`]/g,'').trim().slice(0,12);return{a,n};}
+// LOGIC-END
+const T={fr:{title:'Mon petit coin de jeux',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
+ adult:'Pour les adultes : le prénom et les jeux essayés restent sur cet appareil. Aucun compte, aucune publicité, aucun chat. Les jeux s’ouvrent dans un nouvel onglet.'},
+ar:{title:'ركني الصغير للألعاب',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
+ adult:'للكبار: يبقى الاسم والألعاب التي جُرّبت على هذا الجهاز. لا حساب ولا إعلانات ولا دردشة. تُفتح الألعاب في تبويب جديد.'}};
+const $=id=>document.getElementById(id);
+const S={lang:'fr',profile:null,visited:[],pick:AVATARS[0],editing:false};
+try{const l=localStorage.getItem('menu-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+try{S.profile=cleanProfile(JSON.parse(localStorage.getItem('menu-profile')||'null'));}catch(e){}
+try{S.visited=cleanVisited(JSON.parse(localStorage.getItem('menu-visited')||'[]'));}catch(e){}
+const t=()=>T[S.lang];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function render(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';document.title=t().title;
+$('title').textContent=t().title;$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('adult').textContent=t().adult;
+const setup=!S.profile||S.editing;$('setup').hidden=!setup;$('hello').hidden=setup;$('menu').hidden=setup;
+if(setup){$('sq').textContent=t().sq;$('sl').textContent=t().sl;$('ok').textContent=t().ok;
+ $('avs').innerHTML=AVATARS.map(a=>`<button class="avb" data-a="${a}" aria-pressed="${a===S.pick}">${a}</button>`).join('');return;}
+$('hav').textContent=S.profile.a;$('hmsg').innerHTML=`${esc(t().hi(S.profile.n))}<small>${t().sub}</small>`;
+const li=S.lang==='ar'?'ar':'fr';
+$('menu').innerHTML=GROUPS.map((g,gi)=>`<h2>${g[S.lang==='ar'?1:0]}</h2><div class="grid" style="margin-bottom:18px">${GAMES.filter(x=>x.g===gi).map(x=>
+`<a class="g" style="--c:${x.c}" href="${x.u}" target="_blank" rel="noopener" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
+$('avs').addEventListener('click',e=>{const b=e.target.closest('.avb');if(!b)return;S.pick=b.dataset.a;render();$('nm').focus();});
+$('ok').addEventListener('click',()=>{S.profile=cleanProfile({a:S.pick,n:$('nm').value});save('menu-profile',S.profile);S.editing=false;render();});
+$('nm').addEventListener('keydown',e=>{if(e.key==='Enter')$('ok').click();});
+$('edit').addEventListener('click',()=>{S.editing=true;S.pick=S.profile.a;render();$('nm').value=S.profile.n;});
+$('menu').addEventListener('click',e=>{const a=e.target.closest('.g');if(!a)return;S.visited=markVisited(S.visited,a.dataset.id);save('menu-visited',S.visited);setTimeout(render,300);});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('menu-lang',S.lang);}catch(e){}render();});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La boîte à compliments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff3d1;--tint:#ffe49a;--ink:#3b2d12;--soft:#7d6a3f;--card:#ffffff;--sun:#ff9f43;--ring:#3b2d12;--ok:#2f8f55;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#2e2410;--tint:#4a3a18;--ink:#fff3d9;--soft:#d6c394;--card:#3d3016;--sun:#ffb25e;--ring:#fff3d9;--ok:#5fcf88}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#2e2410;--tint:#4a3a18;--ink:#fff3d9;--soft:#d6c394;--card:#3d3016;--sun:#ffb25e;--ring:#fff3d9;--ok:#5fcf88}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:640px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tools{display:flex;gap:8px}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.stage{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:20px 16px;text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center}
+.q{margin:0;font-size:1.45rem;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%}
+.q8{display:flex;align-items:center;gap:12px;border:4px solid var(--ink);background:var(--tint);border-radius:22px;padding:10px 14px;font-weight:600;font-size:1.15rem;min-height:72px;text-align:start}
+.q8 span{font-size:2.2rem}
+.q8[aria-pressed=true]{background:var(--sun);color:#3b2d12;transform:scale(1.03)}
+.q8:active{transform:scale(.95)}
+.count{margin:0;color:var(--soft);font-weight:600}
+.gift{font-size:6rem;line-height:1}
+.gift.open{animation:shake .6s}
+.cards{display:flex;flex-direction:column;gap:12px;width:100%}
+.cc{display:flex;align-items:center;gap:14px;background:var(--tint);border:4px solid var(--ink);border-radius:22px;padding:14px 16px;text-align:start;font-size:1.15rem;font-weight:600;animation:rise .5s both}
+.cc span{font-size:2.6rem}
+.cc:nth-child(2){animation-delay:.25s}.cc:nth-child(3){animation-delay:.5s}
+.big{border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#3b2d12;font-weight:700;font-size:1.3rem;padding:12px 28px;min-height:56px}
+.big:disabled{opacity:.45;cursor:default}
+.ghost{border:3px solid var(--ink);border-radius:18px;background:transparent;font-weight:600;padding:10px 18px;min-height:48px}
+.stars{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;list-style:none;margin:0;padding:0;width:100%}
+.stars li{background:var(--tint);border-radius:18px;padding:8px 12px;font-weight:600}
+.stars b{font-size:1.8rem;display:block}
+.note{margin:0;font-size:.95rem;color:var(--soft)}
+.msg{margin:0;font-size:1.25rem;font-weight:600;text-align:center;min-height:2em}
+[hidden]{display:none!important}
+@keyframes shake{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><div class="tools"><button class="tool" id="tbtn"></button><button class="tool" id="snd" aria-pressed="true"></button><button class="tool" id="lang"></button></div></header>
+  <main class="stage" id="stage"></main>
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  <p id="vnote" hidden class="note" style="text-align:center">لا يوجد صوت عربي على هذا الجهاز. Pas de voix arabe sur cet appareil : installe-la dans Réglages, Synthèse vocale.</p>
+</div>
+<script>
+// LOGIC-START
+const KEYS=['courage','kindness','curiosity','creativity','grit','humor','help','calm'];
+const MAX_PICK=3;
+function toggleSelect(sel,key,max){if(!KEYS.includes(key))return sel;if(sel.includes(key))return sel.filter(k=>k!==key);if(sel.length>=max)return sel;return sel.concat(key);}
+function addCounts(counts,keys){const r=Object.assign({},counts);keys.forEach(k=>{if(KEYS.includes(k))r[k]=(r[k]||0)+1;});return r;}
+function cleanCounts(o){const r={};if(o&&typeof o==='object')KEYS.forEach(k=>{const v=Number(o[k]);if(Number.isFinite(v)&&v>0)r[k]=Math.min(Math.floor(v),999);});return r;}
+function totalStars(c){return Object.values(c).reduce((a,b)=>a+b,0);}
+// LOGIC-END
+const Q={
+courage:['🦁',['Courage','Tu essaies même quand c’est difficile.'],['الشجاعة','تحاول حتى عندما يكون الأمر صعباً.']],
+kindness:['💛',['Gentillesse','Tu fais du bien aux autres autour de toi.'],['اللطف','تفعل الخير لمن حولك.']],
+curiosity:['🔍',['Curiosité','Tu te poses des questions et tu veux comprendre.'],['الفضول','تسأل أسئلة وتريد أن تفهم.']],
+creativity:['🎨',['Créativité','Tu inventes des choses que personne n’a faites.'],['الإبداع','تخترع أشياء لم يفعلها أحد.']],
+grit:['🐢',['Persévérance','Tu continues, petit à petit, jusqu’au bout.'],['المثابرة','تواصل شيئاً فشيئاً حتى النهاية.']],
+humor:['😄',['Humour','Tu fais sourire et rire les gens.'],['المرح','تجعل الناس يبتسمون ويضحكون.']],
+help:['🤝',['Entraide','Tu aides quand quelqu’un en a besoin.'],['التعاون','تساعد عندما يحتاج أحد إلى المساعدة.']],
+calm:['🌊',['Calme','Tu sais te reposer et rester tranquille.'],['الهدوء','تعرف كيف ترتاح وتبقى هادئاً.']]};
+const T={
+fr:{title:'La boîte à compliments',sound:'Son',q:'Quelles forces as-tu en toi ? Choisis-en jusqu’à 3.',open:'Ouvrir la boîte',treasure:'Mon trésor',again:'Recommencer',back:'Retour',
+ intro:'Touche tes forces, puis ouvre la boîte.',opened:'Voici ce que ta boîte dit de toi.',idea:'Idée : dis un compliment à quelqu’un aujourd’hui !',
+ count:n=>`${n} sur ${MAX_PICK}`,empty:'Ton trésor est vide : ouvre ta première boîte !',wipe:'Vider mon trésor',
+ adult:'Pour les adultes : le trésor reste sur cet appareil. Les forces sont choisies par l’enfant, sans note ni comparaison.'},
+ar:{title:'صندوق المجاملات',sound:'الصوت',q:'ما هي قواك؟ اختر حتى 3.',open:'افتح الصندوق',treasure:'كنزي',again:'ابدأ من جديد',back:'رجوع',
+ intro:'المس قواك ثم افتح الصندوق.',opened:'هذا ما يقوله صندوقك عنك.',idea:'فكرة: قل مجاملة لشخص ما اليوم!',
+ count:n=>`${n} من ${MAX_PICK}`,empty:'كنزك فارغ: افتح صندوقك الأول!',wipe:'أفرغ كنزي',
+ adult:'للكبار: يبقى الكنز على هذا الجهاز. يختار الطفل قواه بنفسه، دون درجات أو مقارنة.'}};
+const $=id=>document.getElementById(id);
+const S={lang:'fr',sound:true,step:'pick',sel:[],counts:{}};
+try{const l=localStorage.getItem('cmp-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+try{S.counts=cleanCounts(JSON.parse(localStorage.getItem('cmp-counts')||'{}'));}catch(e){}
+const t=()=>T[S.lang],li=()=>S.lang==='ar'?2:1;
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+function say(text){$('msg').textContent=text;const n=$('vnote');n.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
+try{speechSynthesis.cancel();const v=voiceFor(S.lang);if(S.lang==='ar'&&!v&&VOICES.length){n.hidden=false;return;}
+const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
+$('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
+$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('tbtn').textContent='💎 '+t().treasure;document.title=t().title;}
+function render(){const st=$('stage'),x=t();
+if(S.step==='pick'){st.innerHTML=`<p class="q">${x.q}</p><div class="grid">${KEYS.map(k=>`<button class="q8" data-a="tog" data-v="${k}" aria-pressed="${S.sel.includes(k)}"><span>${Q[k][0]}</span>${Q[k][li()][0]}</button>`).join('')}</div><p class="count">${x.count(S.sel.length)}</p><button class="big" data-a="open" ${S.sel.length?'':'disabled'}>🎁 ${x.open}</button>`;}
+else if(S.step==='box'){st.innerHTML=`<div class="gift open">🎁</div><div class="cards">${S.sel.map(k=>`<div class="cc"><span>${Q[k][0]}</span><div>${Q[k][li()][0]} : ${Q[k][li()][1]}</div></div>`).join('')}</div><p class="q">${x.idea}</p><button class="big" data-a="again">${x.again}</button><button class="ghost" data-a="tre">💎 ${x.treasure}</button>`;}
+else{const e=Object.entries(S.counts);st.innerHTML=`<p class="q">💎 ${x.treasure}</p>${e.length?`<ul class="stars">${e.map(([k,n])=>`<li><b>${Q[k][0]}</b>${Q[k][li()][0]}<br>${'⭐'.repeat(Math.min(n,5))}${n>5?' +'+(n-5):''}</li>`).join('')}</ul>`:`<p class="note">${x.empty}</p>`}<button class="big" data-a="again">${x.back}</button>${e.length?`<button class="ghost" data-a="wipe">${x.wipe}</button>`:''}<p class="note">${x.adult}</p>`;}}
+function persist(){try{localStorage.setItem('cmp-counts',JSON.stringify(S.counts));}catch(e){}}
+$('stage').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
+if(a==='tog'){S.sel=toggleSelect(S.sel,b.dataset.v,MAX_PICK);render();const nb=document.querySelector(`[data-v="${b.dataset.v}"]`);if(nb)nb.focus();}
+else if(a==='open'){S.counts=addCounts(S.counts,S.sel);persist();S.step='box';render();say(S.sel.map(k=>Q[k][li()][0]+'. '+Q[k][li()][1]).join(' '));}
+else if(a==='again'){S.sel=[];S.step='pick';render();say(t().intro);}
+else if(a==='tre'){S.step='tre';render();}
+else if(a==='wipe'){S.counts={};persist();render();}});
+$('tbtn').addEventListener('click',()=>{S.step='tre';render();});
+$('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('cmp-lang',S.lang);}catch(e){}applyLang();render();if(S.step==='pick')say(t().intro);});
+applyLang();render();say(t().intro);
+</script>
+</body>
+</html>

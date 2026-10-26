@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ma journée dans l’ordre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e3f5e6;--tint:#c6ebcd;--ink:#22392a;--soft:#587562;--leaf:#2f8f55;--card:#ffffff;--sun:#ffc83d;--ring:#22392a;--bad:#e8806a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#14291f;--tint:#1f3d2e;--ink:#eaf8ee;--soft:#a9c7b3;--leaf:#5fcf88;--card:#244636;--sun:#ffd25e;--ring:#eaf8ee;--bad:#e8806a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#14291f;--tint:#1f3d2e;--ink:#eaf8ee;--soft:#a9c7b3;--leaf:#5fcf88;--card:#244636;--sun:#ffd25e;--ring:#eaf8ee;--bad:#e8806a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:700px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tools{display:flex;gap:8px}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.dots{display:flex;gap:8px}
+.dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--ink)}
+.dot.done{background:var(--leaf)}.dot.now{background:var(--sun)}
+.rt{margin:0;font-size:1.4rem;font-weight:700;text-align:center}
+.slots,.tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;border-radius:26px;padding:14px}
+.slots{background:var(--tint)}
+.tray{background:var(--card);border:3px solid var(--ink);min-height:132px}
+.slot{width:clamp(84px,24vw,116px);display:flex;flex-direction:column;align-items:center;gap:6px}
+.num{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700}
+.sbox{width:100%;aspect-ratio:1;border-radius:20px;border:4px dashed var(--soft);background:var(--card);display:grid;place-items:center;padding:0}
+.card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;height:100%;border:0;background:transparent;border-radius:16px;padding:4px;font-weight:600;font-size:.82rem;line-height:1.15}
+.card i{font-style:normal;font-size:clamp(2rem,9vw,2.8rem);line-height:1}
+.tray .card{width:clamp(84px,24vw,116px);aspect-ratio:1;height:auto;border:4px solid var(--ink);background:var(--tint)}
+.card:active{transform:scale(.94)}
+.sbox.ok{border:4px solid var(--leaf);border-style:solid}
+.sbox.wrong{animation:wob .5s;border-color:var(--bad);border-style:solid}
+.card.hint{animation:pulse .8s 4;border-color:var(--sun)}
+.msg{font-size:1.3rem;font-weight:600;text-align:center;min-height:2.2em;margin:0}
+.big{display:block;margin:0 auto;border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#22392a;font-weight:700;font-size:1.4rem;padding:14px 32px;min-height:60px}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:18px;text-align:center}
+.badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0 0;padding:0;list-style:none}
+.badge{background:var(--tint);border-radius:18px;padding:10px 14px;font-weight:600}
+.badge b{display:block;font-size:2rem}.badge small{display:block;color:var(--soft);font-weight:400}
+[hidden]{display:none!important}
+@keyframes wob{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes pulse{50%{transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><div class="tools"><button class="tool" id="snd" aria-pressed="true"></button><button class="tool" id="lang"></button></div></header>
+  <div class="dots" id="dots" role="img"></div>
+  <main id="game" style="display:flex;flex-direction:column;gap:14px">
+    <p class="rt" id="rt"></p>
+    <div class="slots" id="slots" dir="auto"></div>
+    <div class="tray" id="tray"></div>
+    <button class="big" id="check" hidden></button>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <p id="vnote" hidden style="margin:0;text-align:center;font-size:1rem;color:var(--soft)">لا يوجد صوت عربي على هذا الجهاز. Pas de voix arabe sur cet appareil : installe-la dans Réglages, Synthèse vocale.</p>
+    <button class="big" id="next" hidden></button>
+  </main>
+  <section class="panel" id="end" hidden><h2 id="endT"></h2><ul class="badges" id="badges"></ul><button class="big" id="again" style="margin-top:16px"></button></section>
+</div>
+<script>
+// LOGIC-START
+const TOTAL_LEVELS=5;
+const ROUT=[
+{t:['Le matin','الصباح'],s:[['🛏️','Se réveiller','أستيقظ'],['🪥','Se brosser les dents','أنظف أسناني'],['🥣','Prendre le petit-déjeuner','أتناول الفطور']]},
+{t:['À l’école','في المدرسة'],s:[['🎒','Préparer le cartable','أحضّر حقيبتي'],['🚌','Aller à l’école','أذهب إلى المدرسة'],['✏️','Apprendre en classe','أتعلم في القسم']]},
+{t:['Les mains propres','يدان نظيفتان'],s:[['💧','Mouiller les mains','أبلل يدي'],['🧼','Mettre du savon','أضع الصابون'],['🙌','Frotter','أفرك'],['🧻','Sécher','أجفف']]},
+{t:['Le soir','المساء'],s:[['🍲','Dîner','أتعشى'],['🛁','Se laver','أستحم'],['📖','Écouter une histoire','أستمع إلى قصة'],['😴','Dormir','أنام']]},
+{t:['La petite graine','البذرة الصغيرة'],s:[['🕳️','Faire un trou','أحفر حفرة'],['🌱','Mettre la graine','أضع البذرة'],['💦','Arroser','أسقي'],['🌻','La fleur pousse','تنمو الزهرة']]}];
+function shuffle(a,rng){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function buildOrder(n,rng){rng=rng||Math.random;const ids=ROUT[n-1].s.map((_,i)=>i);let r,k=0;do{r=shuffle(ids,rng);k++;}while(r.every((v,i)=>v===i)&&k<30);return r;}
+function checkOrder(slots){return slots.map((v,i)=>v===i);}
+function isSolved(c){return c.length>0&&c.every(Boolean);}
+function firstFree(slots){return slots.indexOf(null);}
+function needsHint(f){return f>=2;}
+function badgesFor(s){const b=[];if(s.fails>=3)b.push('perseverant');if(s.fails===0)b.push('observer');return b;}
+function finalBadges(done){return done>=TOTAL_LEVELS?['routine']:[];}
+// LOGIC-END
+const T={
+fr:{title:'Ma journée dans l’ordre',sound:'Son',next:'Suite',again:'Rejouer',check:'C’est fini !',endT:'Bravo, tu connais bien l’ordre des choses !',
+ hello:'Touche les images pour les mettre dans l’ordre, du début à la fin.',ok:'Bravo, tout est dans le bon ordre !',
+ retry:['Presque ! Les images justes restent, essaie les autres.','Regarde bien, qu’est-ce qui vient d’abord ?','On réessaie ensemble !'],hint:'Regarde, cette image brille !',levelDone:'Tu es formidable !',lvl:'Niveau',of:'sur',
+ badges:{perseverant:['💪','Persévérant','Tu as continué jusqu’au bout.'],observer:['🔍','Observateur','Tu as réussi du premier coup.'],routine:['⏰','Roi du temps','Tu as fini les 5 niveaux.']}},
+ar:{title:'يومي بالترتيب',sound:'الصوت',next:'التالي',again:'العب مرة أخرى',check:'انتهيت!',endT:'أحسنت، تعرف ترتيب الأشياء جيداً!',
+ hello:'المس الصور لتضعها بالترتيب، من البداية إلى النهاية.',ok:'أحسنت، كل شيء في مكانه الصحيح!',
+ retry:['تقريباً! الصور الصحيحة تبقى، جرّب الباقي.','انظر جيداً، ماذا يأتي أولاً؟','لنحاول معاً!'],hint:'انظر، هذه الصورة تلمع!',levelDone:'أنت رائع!',lvl:'المستوى',of:'من',
+ badges:{perseverant:['💪','مثابر','واصلت حتى النهاية.'],observer:['🔍','مراقب ذكي','نجحت من أول مرة.'],routine:['⏰','سيد الوقت','أنهيت المستويات الخمسة.']}}};
+const $=id=>document.getElementById(id);
+const S={lang:'fr',sound:true,level:1,tray:[],slots:[],locked:new Set(),fails:0,hints:0,badges:new Set(),done:0,busy:false};
+try{const l=localStorage.getItem('ord-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+const t=()=>T[S.lang],L=()=>ROUT[S.level-1],li=()=>S.lang==='ar'?2:1;
+const pick=a=>a[Math.floor(Math.random()*a.length)],sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+function say(text){$('msg').textContent=text;const n=$('vnote');n.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
+try{speechSynthesis.cancel();const v=voiceFor(S.lang);if(S.lang==='ar'&&!v&&VOICES.length){n.hidden=false;return;}
+const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}}
+function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
+$('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
+$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('next').textContent=t().next;$('again').textContent=t().again;$('endT').textContent=t().endT;$('check').textContent='✓ '+t().check;document.title=t().title;}
+function renderDots(){$('dots').setAttribute('aria-label',`${t().lvl} ${S.level} ${t().of} ${TOTAL_LEVELS}`);
+$('dots').innerHTML=Array.from({length:TOTAL_LEVELS},(_,i)=>`<span class="dot ${i+1<S.level?'done':i+1===S.level?'now':''}"></span>`).join('');}
+const card=(id,extra)=>{const s=L().s[id];return `<button class="card ${extra||''}" data-id="${id}" aria-label="${s[li()]}"><i>${s[0]}</i>${s[li()]}</button>`;};
+function render(wrong){$('rt').textContent=L().t[S.lang==='ar'?1:0];
+$('slots').innerHTML=S.slots.map((v,i)=>`<div class="slot"><span class="num">${i+1}</span><div class="sbox ${S.locked.has(i)?'ok':''} ${wrong&&wrong[i]?'wrong':''}" data-i="${i}">${v===null?'':card(v)}</div></div>`).join('');
+$('tray').innerHTML=S.tray.map(id=>card(id)).join('');
+$('check').hidden=S.slots.includes(null)||S.busy;}
+function startLevel(n){S.level=n;S.slots=L().s.map(()=>null);S.tray=buildOrder(n);S.locked=new Set();S.fails=0;S.hints=0;S.busy=false;
+$('next').hidden=true;$('end').hidden=true;$('game').hidden=false;renderDots();render();say(t().hello);}
+$('tray').addEventListener('click',e=>{const b=e.target.closest('.card');if(!b||S.busy)return;const id=+b.dataset.id,i=firstFree(S.slots);if(i<0)return;
+S.slots[i]=id;S.tray=S.tray.filter(x=>x!==id);render();say(L().s[id][li()]);});
+$('slots').addEventListener('click',e=>{const b=e.target.closest('.card'),box=e.target.closest('.sbox');if(!b||!box||S.busy)return;const i=+box.dataset.i;if(S.locked.has(i))return;
+S.tray.push(S.slots[i]);S.slots[i]=null;render();});
+$('check').addEventListener('click',async()=>{S.busy=true;const c=checkOrder(S.slots);c.forEach((ok,i)=>{if(ok)S.locked.add(i);});
+if(isSolved(c)){render();S.busy=false;finish();return;}
+S.fails++;render(c.map(x=>!x));say(pick(t().retry));await sleep(900);
+c.forEach((ok,i)=>{if(!ok){S.tray.push(S.slots[i]);S.slots[i]=null;}});S.busy=false;render();
+if(needsHint(S.fails)){S.hints++;const want=L().s.map((_,i)=>i)[firstFree(S.slots)];const h=document.querySelector(`#tray .card[data-id="${want}"]`);if(h){h.classList.add('hint');say(t().hint);}}});
+function finish(){S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
+if(S.level>=TOTAL_LEVELS){finalBadges(S.done).forEach(b=>S.badges.add(b));say(t().ok);setTimeout(showEnd,1500);return;}
+say(t().ok+' '+t().levelDone);$('next').hidden=false;$('next').focus();}
+function showEnd(){$('game').hidden=true;$('end').hidden=false;
+$('badges').innerHTML=[...S.badges].map(k=>{const b=t().badges[k];return `<li class="badge"><b>${b[0]}</b>${b[1]}<small>${b[2]}</small></li>`;}).join('');say(t().endT);}
+$('next').addEventListener('click',()=>startLevel(S.level+1));
+$('again').addEventListener('click',()=>{S.badges=new Set();S.done=0;startLevel(1);});
+$('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('ord-lang',S.lang);}catch(e){}applyLang();if(!$('end').hidden)showEnd();else{renderDots();render();say(t().hello);}});
+applyLang();startLevel(1);
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compte les objets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf7c9;--tint:#d3eb9a;--ink:#26340e;--soft:#62753a;--leaf:#2f8f55;--card:#ffffff;--sun:#ffc83d;--ring:#26340e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1d2810;--tint:#2f4119;--ink:#f1fadd;--soft:#b8cc8e;--leaf:#5fcf88;--card:#2a3a17;--sun:#ffd25e;--ring:#f1fadd}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1d2810;--tint:#2f4119;--ink:#f1fadd;--soft:#b8cc8e;--leaf:#5fcf88;--card:#2a3a17;--sun:#ffd25e;--ring:#f1fadd}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:620px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tools{display:flex;gap:8px}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.dots{display:flex;gap:8px}
+.dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--ink)}
+.dot.done{background:var(--leaf)}.dot.now{background:var(--sun)}
+.objs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:16px;min-height:150px;align-content:center;direction:ltr}
+.o{position:relative;width:clamp(56px,16vw,76px);height:clamp(56px,16vw,76px);border:0;background:transparent;font-size:clamp(2.4rem,10vw,3.4rem);line-height:1;border-radius:18px;padding:0}
+.o.on{background:var(--tint)}
+.o b{position:absolute;top:-4px;inset-inline-end:-2px;min-width:26px;height:26px;border-radius:13px;background:var(--ink);color:var(--bg);font-size:.95rem;display:grid;place-items:center;font-family:'Fredoka',sans-serif}
+.q{margin:0;font-size:1.4rem;font-weight:700;text-align:center}
+.tip{margin:0;text-align:center;color:var(--soft);font-weight:600}
+.choices{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;direction:ltr}
+.num{width:clamp(80px,24vw,104px);height:clamp(80px,24vw,104px);border:4px solid var(--ink);border-radius:26px;background:var(--tint);font-size:3rem;font-weight:700;font-family:'Fredoka',sans-serif}
+.num:active{transform:scale(.93)}
+.num.good{background:var(--leaf);color:#fff;animation:pop .4s}
+.num.wrong{animation:wob .4s;opacity:.5}
+.num.hint{animation:pulse .8s 4;border-color:var(--sun);border-width:6px}
+.msg{font-size:1.3rem;font-weight:600;text-align:center;min-height:2.2em;margin:0}
+.big{display:block;margin:0 auto;border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#26340e;font-weight:700;font-size:1.4rem;padding:14px 32px;min-height:60px}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:18px;text-align:center}
+.badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0 0;padding:0;list-style:none}
+.badge{background:var(--tint);border-radius:18px;padding:10px 14px;font-weight:600}
+.badge b{display:block;font-size:2rem}.badge small{display:block;color:var(--soft);font-weight:400}
+[hidden]{display:none!important}
+@keyframes pop{50%{transform:scale(1.15)}}
+@keyframes wob{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes pulse{50%{transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><div class="tools"><button class="tool" id="snd" aria-pressed="true"></button><button class="tool" id="lang"></button></div></header>
+  <div class="dots" id="dots" role="img"></div>
+  <main id="game" style="display:flex;flex-direction:column;gap:14px">
+    <div class="objs" id="objs"></div>
+    <p class="tip" id="tip"></p>
+    <p class="q" id="q"></p>
+    <div class="choices" id="choices"></div>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <p id="vnote" hidden style="margin:0;text-align:center;font-size:1rem;color:var(--soft)">لا يوجد صوت عربي على هذا الجهاز. Pas de voix arabe sur cet appareil : installe-la dans Réglages, Synthèse vocale.</p>
+    <button class="big" id="next" hidden></button>
+  </main>
+  <section class="panel" id="end" hidden><h2 id="endT"></h2><ul class="badges" id="badges"></ul><button class="big" id="again" style="margin-top:16px"></button></section>
+</div>
+<script>
+// LOGIC-START
+const COUNT_MAX=[3,4,5,6,8,10],CHOICES=[2,3,3,3,4,4],EMOJIS=['🍎','⭐','🐟','🎈','🚗','🐥','🍪','🌻'];
+const TOTAL_LEVELS=COUNT_MAX.length;
+function shuffle(a,rng){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function buildCount(n,rng){rng=rng||Math.random;const max=COUNT_MAX[n-1],lo=Math.max(1,max-2);
+const target=lo+Math.floor(rng()*(max-lo+1));
+const cand=[-1,1,-2,2,-3,3].map(d=>target+d).filter(v=>v>=1&&v<=10);
+const near=shuffle(cand.slice(0,4),rng).concat(cand.slice(4));
+const choices=shuffle([target].concat(near.slice(0,CHOICES[n-1]-1)),rng);
+return{target,emoji:EMOJIS[Math.floor(rng()*EMOJIS.length)],choices};}
+function isRight(r,v){return r.target===v;}
+function needsHint(e){return e>=2;}
+function badgesFor(s){const b=[];if(s.errors>=3)b.push('perseverant');if(s.errors===0)b.push('observer');return b;}
+function finalBadges(done){return done>=TOTAL_LEVELS?['counter']:[];}
+// LOGIC-END
+const T={
+fr:{title:'Compte les objets',sound:'Son',next:'Suite',again:'Rejouer',endT:'Bravo, tu sais bien compter !',q:'Combien y en a-t-il ?',tip:'Touche chaque objet pour le compter.',
+ hello:'Compte les objets, puis touche le bon nombre.',ok:n=>`Bravo, il y en a ${n} !`,
+ retry:['Pas ce nombre. Compte encore, objet par objet !','Presque ! Recompte doucement.','On réessaie ensemble !'],hint:'Regarde, ce nombre brille !',levelDone:'Tu comptes très bien !',lvl:'Manche',of:'sur',
+ badges:{perseverant:['💪','Persévérant','Tu as continué jusqu’au bout.'],observer:['🔍','Observateur','Tu as compté juste du premier coup.'],counter:['🔢','Roi des nombres','Tu as fini les 6 manches.']}},
+ar:{title:'عُدّ الأشياء',sound:'الصوت',next:'التالي',again:'العب مرة أخرى',endT:'أحسنت، تعرف كيف تعدّ جيداً!',q:'كم عددها؟',tip:'المس كل شيء لتعدّه.',
+ hello:'عُدّ الأشياء ثم المس الرقم الصحيح.',ok:n=>`أحسنت، عددها ${n}!`,
+ retry:['ليس هذا الرقم. عُدّ مرة أخرى، شيئاً شيئاً!','تقريباً! أعد العدّ بهدوء.','لنحاول معاً!'],hint:'انظر، هذا الرقم يلمع!',levelDone:'تعدّ جيداً جداً!',lvl:'الجولة',of:'من',
+ badges:{perseverant:['💪','مثابر','واصلت حتى النهاية.'],observer:['🔍','مراقب ذكي','عددت صحيحاً من أول مرة.'],counter:['🔢','سيد الأرقام','أنهيت الجولات الست.']}}};
+const $=id=>document.getElementById(id);
+const S={lang:'fr',sound:true,level:1,r:null,tapped:[],errors:0,hints:0,found:false,wrongSet:new Set(),badges:new Set(),done:0};
+try{const l=localStorage.getItem('num-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+const t=()=>T[S.lang],pick=a=>a[Math.floor(Math.random()*a.length)];
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+function say(text){$('msg').textContent=text;const n=$('vnote');n.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
+try{speechSynthesis.cancel();const v=voiceFor(S.lang);if(S.lang==='ar'&&!v&&VOICES.length){n.hidden=false;return;}
+const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}}
+function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
+$('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
+$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('next').textContent=t().next;$('again').textContent=t().again;$('endT').textContent=t().endT;$('q').textContent=t().q;$('tip').textContent=t().tip;document.title=t().title;}
+function renderDots(){$('dots').setAttribute('aria-label',`${t().lvl} ${S.level} ${t().of} ${TOTAL_LEVELS}`);
+$('dots').innerHTML=Array.from({length:TOTAL_LEVELS},(_,i)=>`<span class="dot ${i+1<S.level?'done':i+1===S.level?'now':''}"></span>`).join('');}
+function render(){const r=S.r;
+$('objs').innerHTML=Array.from({length:r.target},(_,i)=>{const k=S.tapped.indexOf(i);return `<button class="o ${k>=0?'on':''}" data-i="${i}" aria-label="${k>=0?k+1:'?'}">${r.emoji}${k>=0?`<b>${k+1}</b>`:''}</button>`;}).join('');
+$('choices').innerHTML=r.choices.map(v=>`<button class="num ${S.found&&isRight(r,v)?'good':''} ${S.wrongSet.has(v)?'wrong':''}" data-v="${v}" ${S.found?'disabled':''}>${v}</button>`).join('');}
+function startLevel(n){S.level=n;S.r=buildCount(n);S.tapped=[];S.errors=0;S.hints=0;S.found=false;S.wrongSet=new Set();
+$('next').hidden=true;$('end').hidden=true;$('game').hidden=false;renderDots();render();say(t().hello);}
+$('objs').addEventListener('click',e=>{const b=e.target.closest('.o');if(!b||S.found)return;const i=+b.dataset.i;
+if(S.tapped.includes(i)){S.tapped=S.tapped.filter(x=>x!==i);render();return;}
+S.tapped.push(i);render();say(String(S.tapped.length));});
+$('choices').addEventListener('click',e=>{const b=e.target.closest('.num');if(!b||S.found)return;const v=+b.dataset.v;
+if(isRight(S.r,v)){S.found=true;render();finish();}
+else{S.errors++;S.wrongSet.add(v);render();
+ if(needsHint(S.errors)){S.hints++;const g=document.querySelector(`.num[data-v="${S.r.target}"]`);if(g)g.classList.add('hint');say(t().hint);}else say(pick(t().retry));}});
+function finish(){S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
+if(S.level>=TOTAL_LEVELS){finalBadges(S.done).forEach(b=>S.badges.add(b));say(t().ok(S.r.target));setTimeout(showEnd,1800);return;}
+say(t().ok(S.r.target)+' '+t().levelDone);$('next').hidden=false;$('next').focus();}
+function showEnd(){$('game').hidden=true;$('end').hidden=false;
+$('badges').innerHTML=[...S.badges].map(k=>{const b=t().badges[k];return `<li class="badge"><b>${b[0]}</b>${b[1]}<small>${b[2]}</small></li>`;}).join('');say(t().endT);}
+$('next').addEventListener('click',()=>startLevel(S.level+1));
+$('again').addEventListener('click',()=>{S.badges=new Set();S.done=0;startLevel(1);});
+$('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('num-lang',S.lang);}catch(e){}applyLang();if(!$('end').hidden)showEnd();else{renderDots();render();say(t().hello);}});
+applyLang();startLevel(1);
+</script>
+</body>
+</html>

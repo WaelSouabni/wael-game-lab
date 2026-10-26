@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon humeur du jour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fde9e4;--tint:#fbd3cb;--ink:#3a2433;--soft:#7a5a6e;--card:#ffffff;--sun:#ffc83d;--ring:#3a2433;--calm:#8fc9e8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#2b1f2e;--tint:#3d2b42;--ink:#fbeef5;--soft:#cdb3c4;--card:#41304a;--sun:#ffd25e;--ring:#fbeef5;--calm:#5a8fb0}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#2b1f2e;--tint:#3d2b42;--ink:#fbeef5;--soft:#cdb3c4;--card:#41304a;--sun:#ffd25e;--ring:#fbeef5;--calm:#5a8fb0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Fredoka','Cairo',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.app{max-width:620px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.1}
+.tools{display:flex;gap:8px}
+.tool{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;font-size:1.05rem;padding:0 12px}
+.stage{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:20px 16px;text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center}
+.q{margin:0;font-size:1.5rem;font-weight:600}
+.faces{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+.face{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:24px;border:4px solid var(--ink);background:var(--tint);font-weight:600;font-size:1.05rem;min-height:110px}
+.face span{font-size:3rem;line-height:1}
+.face:active,.opt:active,.size:active{transform:scale(.94)}
+.big-emo{font-size:5rem;line-height:1}
+.sizes{display:flex;gap:14px;justify-content:center;align-items:flex-end;flex-wrap:wrap}
+.size{display:flex;flex-direction:column;align-items:center;gap:8px;border:4px solid var(--ink);background:var(--tint);border-radius:24px;padding:14px 16px;font-weight:600;min-width:96px}
+.size i{display:block;border-radius:50%;background:var(--calm);border:3px solid var(--ink)}
+.opts{display:flex;flex-direction:column;gap:12px;width:100%}
+.opt{display:flex;align-items:center;gap:14px;border:4px solid var(--ink);background:var(--tint);border-radius:22px;padding:12px 18px;font-weight:600;font-size:1.25rem;min-height:68px;text-align:start}
+.opt span{font-size:2.2rem}
+.breath{width:120px;height:120px;border-radius:50%;background:var(--calm);border:4px solid var(--ink);transition:transform 4s ease-in-out}
+.breath.in{transform:scale(1.6)}
+.msg{margin:0;font-size:1.3rem;font-weight:600;min-height:2em}
+.big{border:4px solid var(--ink);border-radius:22px;background:var(--sun);color:#3a2433;font-weight:700;font-size:1.3rem;padding:12px 28px;min-height:56px}
+.ghost{border:3px solid var(--ink);border-radius:18px;background:transparent;font-weight:600;padding:10px 18px;min-height:48px}
+.log{list-style:none;margin:0;padding:0;width:100%;display:flex;flex-direction:column;gap:8px}
+.log li{display:flex;align-items:center;gap:12px;background:var(--tint);border-radius:18px;padding:8px 14px;font-weight:600}
+.log li span{font-size:2rem}.log li small{margin-inline-start:auto;color:var(--soft)}
+.note{margin:0;font-size:.95rem;color:var(--soft)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title"></h1>
+    <div class="tools"><button class="tool" id="jbtn"></button><button class="tool" id="snd" aria-pressed="true"></button><button class="tool" id="lang"></button></div>
+  </header>
+  <main class="stage" id="stage"></main>
+  <p class="msg" id="msg" role="status" aria-live="polite" style="text-align:center"></p>
+  <p id="vnote" hidden class="note" style="text-align:center">لا يوجد صوت عربي على هذا الجهاز. Pas de voix arabe sur cet appareil : installe-la dans Réglages, Synthèse vocale.</p>
+</div>
+<script>
+// LOGIC-START
+const EMOTIONS=['joy','sad','angry','tired','scared','excited'];
+const HELPERS={joy:['talk','move','draw'],sad:['hug','talk','draw'],angry:['breathe','move','talk'],tired:['rest','breathe','hug'],scared:['hug','talk','breathe'],excited:['move','draw','talk']};
+function helpersFor(e){return HELPERS[e]||[];}
+function validIntensity(i){return i===1||i===2||i===3;}
+function dayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addEntry(list,entry){if(!EMOTIONS.includes(entry.e)||!validIntensity(entry.i))return list;
+const r=list.filter(x=>x.d!==entry.d);r.push(entry);r.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);return r.slice(-30);}
+function lastDays(list,n){return list.slice(-n);}
+// LOGIC-END
+
+const T={
+fr:{title:'Mon humeur du jour',sound:'Son',q:'Comment tu te sens aujourd’hui ?',q2:'C’est comment, ce sentiment ?',q3:'Qu’est-ce qui peut t’aider ?',
+ sizes:['Un petit peu','Moyen','Beaucoup'],done:'C’est fait',thanks:'Merci d’avoir partagé ce que tu ressens. C’est courageux !',again:'Recommencer',journal:'Mon journal',empty:'Ton journal est vide pour l’instant.',
+ clear:'Effacer mon journal',back:'Retour',adult:'Pour les adultes : ces informations restent sur cet appareil. Ce jeu n’est pas un outil médical et ne pose aucun diagnostic.',
+ inhale:'Inspire doucement…',exhale:'Expire doucement…',well:'Bravo, tu as bien respiré.',
+ emo:{joy:['😊','Content','Quelle belle nouvelle ! Garde ce sourire.'],sad:['😢','Triste','C’est normal d’être triste. Merci de me le dire.'],angry:['😠','Fâché','C’est permis d’être fâché. On peut calmer la colère ensemble.'],tired:['😴','Fatigué','Tu as le droit d’être fatigué. Ton corps a besoin de repos.'],scared:['😨','Inquiet','Avoir peur, ça arrive à tout le monde. Tu n’es pas seul.'],excited:['🤩','Excité','Quelle énergie ! C’est super de se sentir comme ça.']},
+ help:{breathe:['🌬️','Respirer doucement',''],hug:['🤗','Demander un câlin','Va demander un gros câlin à quelqu’un que tu aimes.'],talk:['🗣️','En parler à un adulte','Dis à un adulte de confiance comment tu te sens. Ça aide beaucoup.'],move:['💃','Bouger un peu','Saute, danse ou tourne pendant une minute !'],draw:['✏️','Dessiner','Prends une feuille et dessine ce que tu ressens.'],rest:['🛌','Me reposer','Trouve un coin calme et repose-toi un petit moment.']}},
+ar:{title:'مزاجي اليوم',sound:'الصوت',q:'كيف تشعر اليوم؟',q2:'ما قوة هذا الشعور؟',q3:'ما الذي يمكن أن يساعدك؟',
+ sizes:['قليلاً','متوسط','كثيراً'],done:'انتهيت',thanks:'شكراً لأنك شاركتني شعورك. هذا شجاع!',again:'ابدأ من جديد',journal:'يومياتي',empty:'يومياتك فارغة حتى الآن.',
+ clear:'امسح يومياتي',back:'رجوع',adult:'للكبار: تبقى هذه المعلومات على هذا الجهاز. هذه اللعبة ليست أداة طبية ولا تضع أي تشخيص.',
+ inhale:'خذ شهيقاً بهدوء…',exhale:'أخرج الزفير بهدوء…',well:'أحسنت، تنفست جيداً.',
+ emo:{joy:['😊','سعيد','يا لها من أخبار جميلة! احتفظ بهذه الابتسامة.'],sad:['😢','حزين','من الطبيعي أن تحزن. شكراً لأنك أخبرتني.'],angry:['😠','غاضب','يحق لك أن تغضب. يمكننا تهدئة الغضب معاً.'],tired:['😴','متعب','من حقك أن تتعب. جسمك يحتاج إلى راحة.'],scared:['😨','قلق','الخوف يحدث للجميع. لست وحدك.'],excited:['🤩','متحمس','يا لها من طاقة! جميل أن تشعر هكذا.']},
+ help:{breathe:['🌬️','أتنفس بهدوء',''],hug:['🤗','أطلب عناقاً','اذهب واطلب عناقاً كبيراً ممن تحب.'],talk:['🗣️','أخبر شخصاً كبيراً','قل لشخص بالغ تثق به كيف تشعر. هذا يساعد كثيراً.'],move:['💃','أتحرك قليلاً','اقفز أو ارقص أو لف لمدة دقيقة!'],draw:['✏️','أرسم','خذ ورقة وارسم ما تشعر به.'],rest:['🛌','أرتاح','ابحث عن مكان هادئ واسترح قليلاً.']}}
+};
+const $=id=>document.getElementById(id);
+const S={lang:'fr',sound:true,step:'pick',emo:null,int:null,helper:null,journal:[],token:0};
+try{const l=localStorage.getItem('hum-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
+try{const j=JSON.parse(localStorage.getItem('hum-journal')||'[]');if(Array.isArray(j))S.journal=j.filter(x=>EMOTIONS.includes(x.e)&&validIntensity(x.i));}catch(e){}
+const t=()=>T[S.lang];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+function say(text){$('msg').textContent=text;const note=$('vnote');note.hidden=true;if(!S.sound||!('speechSynthesis' in window))return;
+try{speechSynthesis.cancel();const v=voiceFor(S.lang);
+if(S.lang==='ar'&&!v&&VOICES.length){note.hidden=false;return;}
+const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang;}else u.lang=S.lang==='ar'?'ar-SA':'fr-FR';u.rate=.9;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+function applyLang(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';
+$('title').textContent=t().title;$('snd').textContent=(S.sound?'🔊 ':'🔇 ')+t().sound;$('snd').setAttribute('aria-pressed',S.sound);
+$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('jbtn').textContent='📒 '+t().journal;document.title=t().title;}
+function render(){const st=$('stage'),x=t();
+if(S.step==='pick'){st.innerHTML=`<p class="q">${x.q}</p><div class="faces">${EMOTIONS.map(k=>`<button class="face" data-a="emo" data-v="${k}"><span>${x.emo[k][0]}</span>${x.emo[k][1]}</button>`).join('')}</div>`;}
+else if(S.step==='int'){st.innerHTML=`<div class="big-emo">${x.emo[S.emo][0]}</div><p class="q">${x.q2}</p><div class="sizes">${[1,2,3].map(i=>`<button class="size" data-a="int" data-v="${i}"><i style="width:${16+i*16}px;height:${16+i*16}px"></i>${x.sizes[i-1]}</button>`).join('')}</div>`;}
+else if(S.step==='help'){st.innerHTML=`<p class="q">${x.q3}</p><div class="opts">${helpersFor(S.emo).map(h=>`<button class="opt" data-a="help" data-v="${h}"><span>${x.help[h][0]}</span>${x.help[h][1]}</button>`).join('')}</div>`;}
+else if(S.step==='act'){const h=x.help[S.helper];
+ st.innerHTML=S.helper==='breathe'?`<div class="breath" id="br"></div><p class="q" id="brt"></p>`:`<div class="big-emo">${h[0]}</div><p class="q">${h[2]}</p><button class="big" data-a="finish">${x.done}</button>`;}
+else if(S.step==='thanks'){st.innerHTML=`<div class="big-emo">🌟</div><p class="q">${x.thanks}</p><button class="big" data-a="again">${x.again}</button><button class="ghost" data-a="journal">📒 ${x.journal}</button>`;}
+else if(S.step==='journal'){const rows=lastDays(S.journal,7).slice().reverse();
+ st.innerHTML=`<p class="q">📒 ${x.journal}</p>${rows.length?`<ul class="log">${rows.map(r=>`<li><span>${x.emo[r.e][0]}</span>${x.emo[r.e][1]}<small>${'●'.repeat(r.i)} ${r.d.slice(5)}</small></li>`).join('')}</ul>`:`<p class="note">${x.empty}</p>`}
+ <button class="big" data-a="again">${x.back}</button>${rows.length?`<button class="ghost" data-a="wipe">${x.clear}</button>`:''}<p class="note">${x.adult}</p>`;}}
+function persist(){try{localStorage.setItem('hum-journal',JSON.stringify(S.journal));}catch(e){}}
+async function breathe(){const my=++S.token;
+for(let c=0;c<3;c++){for(const ph of ['in','out']){if(S.token!==my)return;const br=$('br'),tx=$('brt');if(!br)return;
+ br.classList.toggle('in',ph==='in');tx.textContent=ph==='in'?t().inhale:t().exhale;if(c===0||ph==='in')say(tx.textContent);await sleep(4000);}}
+if(S.token!==my)return;say(t().well);S.step='thanks';render();}
+function go(step){S.token++;S.step=step;render();}
+$('stage').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
+if(a==='emo'){S.emo=v;say(t().emo[v][2]);go('int');}
+else if(a==='int'){S.int=+v;go('help');say(t().q3);}
+else if(a==='help'){S.helper=v;S.journal=addEntry(S.journal,{d:dayKey(new Date()),e:S.emo,i:S.int,h:v});persist();go('act');if(v==='breathe')breathe();else say(t().help[v][2]);}
+else if(a==='finish'){say(t().thanks);go('thanks');}
+else if(a==='again'){go('pick');say(t().q);}
+else if(a==='journal'){go('journal');}
+else if(a==='wipe'){S.journal=[];persist();go('journal');}});
+$('jbtn').addEventListener('click',()=>go('journal'));
+$('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
+$('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('hum-lang',S.lang);}catch(e){}applyLang();if(S.step==='act'&&S.helper==='breathe'){go('pick');}else render();if(S.step==='pick')say(t().q);});
+applyLang();render();say(t().q);
+</script>
+</body>
+</html>
