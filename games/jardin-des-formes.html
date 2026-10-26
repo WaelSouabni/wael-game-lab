@@ -121,21 +121,44 @@ function svg(shape,color,filled){return `<svg viewBox="0 0 100 100" aria-hidden=
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
-let arabicTtsPromise=null;
-let arabicTtsReady=null;
 async function sayArabicOnline(text){
-  // Online Arabic speech workaround: play a hosted Arabic TTS audio stream.
-  // The browser can play cross-origin audio without CORS access to its bytes.
-  const chunks=String(text).match(/[\\s\\S]{1,180}/g)||[String(text)];
+  // Arabic TTS runs through the site's Vercel function; the provider key never reaches the browser.
+  const chunks=[];
+  let remaining=String(text).trim();
+  while(remaining.length>300){
+    let cut=remaining.lastIndexOf(' ',300);
+    if(cut<120)cut=300;
+    chunks.push(remaining.slice(0,cut));
+    remaining=remaining.slice(cut).trim();
+  }
+  if(remaining)chunks.push(remaining);
   for(const chunk of chunks){
-    const url='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q='+encodeURIComponent(chunk);
-    const audio=new Audio(url);
-    audio.preload='auto';
-    await new Promise((resolve,reject)=>{
-      audio.addEventListener('ended',resolve,{once:true});
-      audio.addEventListener('error',()=>reject(new Error('Arabic audio stream failed')),{once:true});
-      audio.play().catch(reject);
+    const response=await fetch('/api/tts',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text:chunk})
     });
+    if(!response.ok){
+      let code='tts_provider_failed';
+      try{code=(await response.json()).error||code;}catch(e){}
+      const error=new Error(code);
+      error.code=code;
+      throw error;
+    }
+    const blob=await response.blob();
+    if(!blob.size)throw new Error('empty_audio');
+    const audioUrl=URL.createObjectURL(blob);
+    const audio=new Audio(audioUrl);
+    audio.preload='auto';
+    try{
+      await new Promise((resolve,reject)=>{
+        audio.addEventListener('ended',resolve,{once:true});
+        audio.addEventListener('error',()=>reject(new Error('audio_decode_failed')),{once:true});
+        audio.play().catch(reject);
+      });
+    }finally{
+      URL.revokeObjectURL(audioUrl);
+    }
   }
   return true;
 }
@@ -157,8 +180,10 @@ async function say(text,silentMsg){
     }catch(e){
       if(e && (e.name==='NotAllowedError' || /user gesture|not allowed|play\(\) failed/i.test(String(e.message||'')))){
         note.textContent='اضغط على زر داخل اللعبة لسماع الصوت العربي. Appuie sur un bouton du jeu pour activer la voix arabe.';
+      }else if(e && e.code==='tts_not_configured'){
+        note.textContent='الصوت العربي يحتاج إعداد الخدمة على الموقع. La clé du service vocal doit être configurée sur Vercel.';
       }else{
-        note.textContent='الصوت العربي غير متاح حالياً. Le service vocal arabe ne répond pas pour le moment.';
+        note.textContent='تعذّر تشغيل الصوت العربي. Vérifie la configuration du service vocal puis réessaie.';
       }
       note.hidden=false;
       console.warn('Arabic online TTS failed:',e);
