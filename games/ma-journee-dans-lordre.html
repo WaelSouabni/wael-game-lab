@@ -103,7 +103,7 @@ let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
 let remoteArabicAudio=null;
-function say(text){if(!silentMsg)$('msg').textContent=text;const note=$('vnote');note.hidden=true;if(!S.sound)return;
+function say(text){if(typeof silentMsg==='undefined'||!silentMsg)$('msg').textContent=text;const note=$('vnote');note.hidden=true;if(!S.sound)return;
 try{
   if(S.lang==='ar'){
     if('speechSynthesis' in window)speechSynthesis.cancel();
