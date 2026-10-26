@@ -12,10 +12,43 @@ ar:{title:"تحدّي الحساب",subtitle:"حلّ عمليات حسابية �
 let lang='fr',sound=true,score=0,round=0,deck=[],matches=0,first=null,lock=false;
 const $=id=>document.getElementById(id),t=()=>TXT[lang],pick=a=>a[Math.floor(Math.random()*a.length)];
 function shuffle(a){return a.slice().sort(()=>Math.random()-.5)}
-function say(text){$('voiceNote').hidden=true;if(!sound)return;
-try{if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang==='ar'?'ar':'fr-FR';u.rate=.86;const vs=speechSynthesis.getVoices();const v=vs.find(x=>x.lang.toLowerCase().startsWith(lang==='ar'?'ar':'fr'));if(v)u.voice=v;speechSynthesis.speak(u);return;}}catch(e){}
-$('voiceNote').textContent=t().hint;$('voiceNote').hidden=false;}
-function message(ok){$('feedback').textContent=ok?pick(t().correct):pick(t().wrong);if(ok)say($('feedback').textContent)}
+async function say(text){
+ if(!sound)return;
+ if(lang==='ar'){
+  try{
+   const response=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:String(text).slice(0,300)})});
+   if(response.ok){
+    const blob=await response.blob();
+    if(blob.size){
+     const url=URL.createObjectURL(blob),audio=new Audio(url);
+     const played=await new Promise(resolve=>{
+      audio.addEventListener('ended',()=>resolve(true),{once:true});
+      audio.addEventListener('error',()=>resolve(false),{once:true});
+      audio.play().catch(()=>resolve(false));
+     });
+     URL.revokeObjectURL(url);
+     if(played)return;
+    }
+   }
+  }catch(error){}
+ }
+ try{
+  if('speechSynthesis'in window){
+   const voices=speechSynthesis.getVoices()||[];
+   const voice=voices.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(lang==='ar'?'ar':'fr'));
+   if(lang==='ar'&&!voice)throw new Error('no_arabic_voice');
+   speechSynthesis.cancel();
+   const utterance=new SpeechSynthesisUtterance(text);
+   utterance.lang=lang==='ar'?(voice.lang||'ar'):'fr-FR';
+   if(voice)utterance.voice=voice;
+   utterance.rate=.88;
+   speechSynthesis.speak(utterance);
+   return;
+  }
+ }catch(error){}
+ $('voiceNote').textContent=lang==='ar'?'تعذّر تشغيل الصوت العربي. جرّب تفعيل الصوت أو استخدام جهاز يدعم العربية.':'La lecture vocale est indisponible sur cet appareil.';
+ $('voiceNote').hidden=false;
+}function message(ok){$('feedback').textContent=ok?pick(t().correct):pick(t().wrong);if(ok)say($('feedback').textContent)}
 function setLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('title').textContent=t().title;$('subtitle').textContent=t().subtitle;$('homeLabel').textContent=t().home;$('sound').textContent=sound?t().sound:t().mute;$('sound').setAttribute('aria-pressed',sound);$('lang').textContent=lang==='fr'?'العربية':'Français';$('restart').textContent=t().again;$('next').textContent=t().next;render()}
 function begin(){score=0;round=0;matches=0;first=null;lock=false;$('feedback').textContent='';$('restart').hidden=true;$('next').hidden=true;render()}
 function render(){if(KIND==='memory'){renderMemory();return}if(KIND==='eco'){renderEco();return}if(KIND==='letters'){renderLetters();return}renderMath()}
