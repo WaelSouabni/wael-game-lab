@@ -1,19 +1,23 @@
-# Voix arabe gratuite — Wael Game Lab
+# Voix arabe — Wael Game Lab
 
-Les neuf jeux utilisent désormais `nabra-tts`, un moteur de synthèse vocale arabe open source qui fonctionne dans le navigateur.
+Les neuf jeux existants et les nouveaux jeux essaient d'abord le service vocal du site, puis utilisent une voix arabe native du navigateur si elle est disponible.
 
-## Coût et installation
+## Configuration nécessaire pour le service vocal
 
-- Gratuit, sans compte, sans clé API et sans backend.
-- Aucune installation de logiciel sur l'ordinateur.
-- Au premier essai en arabe, le navigateur télécharge le moteur vocal (environ 16 Mo pour le modèle fp16, plus les fichiers d'exécution). Il est ensuite mis en cache par le navigateur.
-- Le téléchargement initial nécessite une connexion Internet. La disponibilité du modèle dépend de CDN et de l'hébergement public.
-- La voix disponible est en arabe standard moderne (pas un dialecte tunisien garanti).
+Le endpoint `/api/tts` utilise le fournisseur Munsit. Sur le projet Vercel lié au dépôt :
 
-## Utilisation
+1. Ouvrir **Settings → Environment Variables**.
+2. Ajouter `MUNSIT_API_KEY` avec une clé API valide obtenue auprès de Munsit.
+3. Activer la variable pour les environnements souhaités (Production, et Preview si nécessaire).
+4. Redéployer le projet après l'ajout ou la modification de la variable.
+5. Tester un jeu en arabe et vérifier la requête `/api/tts` dans l'onglet Network.
 
-Ouvrir le jeu, sélectionner العربية et activer le son. Le premier lancement peut prendre un peu de temps pour télécharger le modèle. Ensuite, la génération vocale s'effectue localement dans le navigateur.
+La clé doit rester côté serveur : ne jamais la placer dans le JavaScript du navigateur ni dans le dépôt Git.
 
-## Hébergement
+## Limites et diagnostic
 
-Le projet peut rester sur GitHub Pages : aucune API Vercel ni clé Azure n'est requise. Le code charge la bibliothèque depuis jsDelivr et le modèle vocal depuis son dépôt public.
+- Si `/api/tts` répond avec `503 tts_not_configured`, la variable `MUNSIT_API_KEY` n'est pas disponible dans l'environnement Vercel qui exécute la fonction.
+- Si le fournisseur échoue, les jeux tentent la synthèse vocale native lorsque l'appareil dispose d'une voix arabe.
+- La disponibilité des voix natives varie selon le navigateur, le système et les langues installées. Ce repli ne garantit donc pas l'audio sur tous les appareils.
+- Si le service Munsit et la voix native sont tous deux indisponibles, le jeu affiche un message de diagnostic au lieu de prétendre que l'audio a démarré.
+- La voix du fournisseur est configurée en arabe standard moderne ; elle ne garantit pas un dialecte tunisien.
