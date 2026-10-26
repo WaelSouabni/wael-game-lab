@@ -136,9 +136,13 @@ async function say(text,silentMsg){
         note.hidden=false;
       }
     }catch(e){
-      note.textContent='تعذّر تحميل الصوت العربي. Vérifie ta connexion Internet puis réessaie.';
+      if(e && (e.name==='NotAllowedError' || /user gesture|not allowed|play\(\) failed/i.test(String(e.message||'')))){
+        note.textContent='اضغط على زر داخل اللعبة لسماع الصوت العربي. Appuie sur un bouton du jeu pour activer la voix arabe.';
+      }else{
+        note.textContent='الصوت العربي غير متاح حالياً. Le service vocal arabe ne répond pas pour le moment.';
+      }
       note.hidden=false;
-      console.warn('Arabic browser TTS failed:',e);
+      console.warn('Arabic online TTS failed:',e);
     }
     return;
   }
