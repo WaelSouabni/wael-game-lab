@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wael Game Lab – Des jeux pour grandir</title>
+<meta name="description" content="Des mini-jeux gratuits pour les enfants de 5 ans et plus, en français et en arabe : observation, logique, nombres, lettres, émotions et confiance en soi. Sans pub, sans compte.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#fff4dc;--bg2:#dff3ff;--ink:#2a2038;--soft:#62577b;--card:#ffffff;--sun:#ffc83d;--coral:#ff6b6b;--teal:#2bb3c0;--violet:#8b6ff0;--ring:#2a2038;--L:40%;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg1:#1d1838;--bg2:#10213a;--ink:#f3eefc;--soft:#c1b8da;--card:#272048;--sun:#ffd25e;--ring:#f3eefc;--L:72%}}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);background:var(--bg1);background-image:linear-gradient(180deg,var(--bg1),var(--bg2));font-family:'Fredoka','Cairo',system-ui,sans-serif;overflow-x:hidden}
+[dir=rtl] body,[dir=rtl] button{font-family:'Cairo','Fredoka',system-ui,sans-serif}
+a,button{font:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--ring);outline-offset:3px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.2rem;text-decoration:none}
+.logo span{font-size:1.8rem;display:inline-block;animation:wig 3s ease-in-out infinite}
+.lang{min-width:48px;height:48px;border-radius:16px;border:3px solid var(--ink);background:var(--card);font-weight:600;padding:0 16px;cursor:pointer}
+.hero{position:relative;display:grid;gap:22px;align-items:center;padding:20px 0 56px}
+@media (min-width:780px){.hero{grid-template-columns:1.15fr .85fr;padding:34px 0 80px}}
+.float{position:absolute;inset:0;pointer-events:none;z-index:0}
+.float i{position:absolute;font-style:normal;font-size:2.2rem;opacity:.9;animation:float 7s ease-in-out infinite}
+.copy,.stage{position:relative;z-index:1}
+.kicker{display:inline-block;background:var(--sun);color:#2a2038;font-weight:700;border-radius:999px;padding:6px 16px;margin:0 0 14px;animation:pop 2.8s ease-in-out infinite}
+h1{margin:0 0 14px;font-size:clamp(2.6rem,9vw,4.6rem);line-height:1.02;font-weight:700}
+h1 span{display:inline-block;color:hsl(calc(var(--i)*30) 78% var(--L));animation:hop 2.4s ease-in-out infinite;animation-delay:calc(var(--i)*.09s)}
+h1 .sp{width:.3em}
+.tag{font-size:clamp(1.15rem,3.4vw,1.5rem);margin:0 0 22px;max-width:30ch;color:var(--soft);font-weight:500}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:60px;padding:0 28px;border-radius:22px;border:4px solid var(--ink);font-weight:700;font-size:1.3rem;text-decoration:none;transition:transform .15s}
+.btn:hover{transform:translateY(-4px) rotate(-1deg)}.btn:active{transform:scale(.96)}
+.btn.main{background:var(--sun);color:#2a2038;box-shadow:0 6px 0 var(--ink);animation:pulse 2.6s ease-in-out infinite}
+.btn.alt{background:var(--card)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.chips li{background:var(--card);border:3px solid var(--ink);border-radius:999px;padding:5px 14px;font-weight:600;font-size:.98rem}
+.stage{display:grid;place-items:center;min-height:300px}
+.blob{width:min(320px,76vw);aspect-ratio:1;border-radius:46% 54% 52% 48%/52% 46% 54% 48%;background:conic-gradient(from 20deg,var(--teal),var(--violet),var(--coral),var(--sun),var(--teal));display:grid;place-items:center;animation:morph 9s ease-in-out infinite;border:5px solid var(--ink);position:relative}
+.blob b{font-size:clamp(6rem,24vw,9rem);line-height:1;animation:bounce 2.2s ease-in-out infinite;filter:drop-shadow(0 8px 0 rgba(0,0,0,.2))}
+.bubble{position:absolute;top:-6px;inset-inline-end:-10px;background:var(--card);border:4px solid var(--ink);border-radius:22px;padding:8px 14px;font-weight:700;animation:wig 3s ease-in-out infinite}
+.wave{display:block;width:100%;height:60px;margin-top:-1px}
+.wave path{fill:var(--card)}
+section.band{background:var(--card);padding:10px 0 60px}
+section.alt{padding:56px 0}
+h2{margin:0 0 8px;font-size:clamp(1.8rem,5vw,2.6rem)}
+.sub{margin:0 0 26px;color:var(--soft);font-size:1.15rem;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.game{position:relative;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#2a2038;background:var(--c);border:4px solid var(--ring);border-radius:28px;padding:18px;min-height:170px;transition:transform .2s}
+.game:hover{transform:translateY(-8px) rotate(-1.5deg)}.game:active{transform:scale(.96)}
+.game:hover .em{animation:wig .6s ease-in-out}
+.em{font-size:3.2rem;line-height:1;display:inline-block}
+.game b{font-size:1.3rem;line-height:1.15}
+.game small{font-size:1rem;font-weight:500;color:#473b5f}
+.game u{position:absolute;inset-block-end:14px;inset-inline-end:16px;text-decoration:none;font-weight:700;font-size:1.5rem}
+.reveal{opacity:1}
+.js .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;transition-delay:calc(var(--d,0)*70ms)}
+.js .reveal.in{opacity:1;transform:none}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
+.pc{background:var(--card);border:3px solid var(--ink);border-radius:24px;padding:18px}
+.pc span{font-size:2.4rem;display:block;margin-bottom:6px}
+.pc h3{margin:0 0 6px;font-size:1.2rem}.pc p{margin:0;color:var(--soft)}
+.skills{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:10px 0 22px;list-style:none}
+.skills li{background:var(--sun);color:#2a2038;border-radius:999px;padding:6px 16px;font-weight:700}
+.note{color:var(--soft);font-size:.98rem;max-width:70ch}
+footer{padding:30px 0 44px;text-align:center;color:var(--soft)}
+footer a{font-weight:700;color:var(--ink)}
+noscript a{font-size:1.4rem;font-weight:700}
+@keyframes float{50%{transform:translateY(-24px) rotate(10deg)}}
+@keyframes hop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-14px)}}
+@keyframes bounce{50%{transform:translateY(-16px) rotate(-4deg)}}
+@keyframes wig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes pop{50%{transform:scale(1.08)}}
+@keyframes pulse{50%{transform:scale(1.05)}}
+@keyframes morph{50%{border-radius:54% 46% 44% 56%/44% 56% 46% 54%;transform:rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.js .reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a class="logo" href="#top" aria-label="Wael Game Lab"><span aria-hidden="true">🎈</span>Wael Game Lab</a><button class="lang" id="lang"></button></nav>
+  <header class="hero" id="top">
+    <div class="float" aria-hidden="true">
+      <i style="left:3%;top:6%;animation-delay:0s">⭐</i><i style="left:44%;top:2%;animation-delay:1.2s">🎈</i><i style="left:90%;top:10%;animation-delay:2.1s">🌈</i>
+      <i style="left:8%;top:62%;animation-delay:.6s">🌻</i><i style="left:50%;top:78%;animation-delay:1.8s">🦊</i><i style="left:86%;top:70%;animation-delay:2.8s">🔺</i>
+    </div>
+    <div class="copy">
+      <p class="kicker" data-t="kicker"></p>
+      <h1 id="brand" aria-label="Wael Game Lab"></h1>
+      <p class="tag" data-t="tag"></p>
+      <div class="cta"><a class="btn main" href="games/menu-accueil.html" data-t="cta1"></a><a class="btn alt" href="#parents" data-t="cta2"></a></div>
+      <ul class="chips" id="chips"></ul>
+    </div>
+    <div class="stage" aria-hidden="true"><div class="blob"><b>🤖</b><span class="bubble" data-t="bubble"></span></div></div>
+  </header>
+</div>
+<svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30C240 70 480 -10 720 25s480 40 720 0V60H0z"/></svg>
+<section class="band" id="games"><div class="wrap">
+  <h2 data-t="gamesT"></h2><p class="sub" data-t="gamesS"></p>
+  <div class="grid" id="grid"></div>
+  <noscript><p><a href="games/menu-accueil.html">▶ Jouer</a></p></noscript>
+</div></section>
+<section class="alt" id="parents"><div class="wrap">
+  <h2 data-t="parentsT"></h2><p class="sub" data-t="parentsS"></p>
+  <div class="pgrid" id="pgrid"></div>
+  <h2 style="font-size:1.5rem" data-t="skillsT"></h2><ul class="skills" id="skills"></ul>
+  <p class="note" data-t="disc"></p>
+</div></section>
+<footer><div class="wrap"><p><span data-t="foot"></span> · <a href="https://github.com/WaelSouabni/wael-game-lab" rel="noopener">GitHub</a></p></div></footer>
+<script>
+document.documentElement.classList.add('js');
+const G=[
+['jardin-des-formes','🌷','#c7ebe6',['Le jardin des formes','Observer et classer'],['حديقة الأشكال','أراقب وأصنّف']],
+['complete-la-suite','🌈','#ffe0a3',['Complète la suite','Trouver ce qui vient après'],['أكمل السلسلة','أجد ما يأتي بعد']],
+['guide-le-robot','🤖','#cddcff',['Guide le petit robot','Logique et programmation'],['وجّه الروبوت الصغير','منطق وبرمجة']],
+['trouve-lombre','🕵️','#d8c9ff',['Trouve l’ombre','Bien observer'],['اعثر على الظل','ملاحظة دقيقة']],
+['compte-les-objets','🔢','#d3eb9a',['Compte les objets','Compter jusqu’à 10'],['عُدّ الأشياء','العدّ حتى 10']],
+['les-lettres','🔤','#b5e6f2',['Les lettres','Lettres françaises et arabes'],['الحروف','حروف عربية وفرنسية']],
+['ma-journee-dans-lordre','⏰','#c6ebcd',['Ma journée dans l’ordre','Routines et temps'],['يومي بالترتيب','الروتين والوقت']],
+['mon-humeur-du-jour','😊','#fbd3cb',['Mon humeur du jour','Mettre des mots sur ses émotions'],['مزاجي اليوم','التعبير عن مشاعري']],
+['la-boite-a-compliments','🎁','#ffe49a',['La boîte à compliments','Découvrir ses forces'],['صندوق المجاملات','اكتشاف نقاط قوتي']]];
+const I={
+fr:{kicker:'Des jeux pour les 5 ans et plus',tag:'Des mini-jeux pour jouer, découvrir ses talents et prendre confiance en soi.',cta1:'🎮 Jouer maintenant',cta2:'👨‍👩‍👧 Pour les parents',bubble:'Salut ! On joue ?',
+ chips:['5 ans et +','Français et عربي','Zéro pub','Sans compte'],gamesT:'Choisis ton jeu',gamesS:'Chaque jeu dure quelques minutes. Pas de « perdu », juste « essaie encore » !',
+ parentsT:'Pour les parents et les éducateurs',parentsS:'Un petit laboratoire de jeux pensé pour valoriser l’effort, pas la performance.',
+ cards:[['🛡️','Sans pub, sans compte, sans chat','Aucun contact avec des inconnus, aucun achat, aucune publicité.'],['🔒','Vie privée','Le prénom, la langue et les progrès restent sur l’appareil de l’enfant.'],['🌱','Pas d’échec punitif','Une erreur donne un indice et un encouragement. Les badges récompensent l’effort.'],['🗣️','Bilingue, avec voix','Tout est en français et en arabe, avec une voix qui lit les consignes (selon l’appareil).']],
+ skillsT:'Compétences travaillées',skills:['Observation','Logique','Nombres','Lettres','Routines','Émotions','Confiance en soi'],
+ disc:'Ces jeux sont un outil ludique de découverte. Ils ne remplacent pas l’avis d’un professionnel et ne posent aucun diagnostic.',foot:'Un projet personnel de Wael Souabni',go:'Jouer'},
+ar:{kicker:'ألعاب للأطفال من 5 سنوات',tag:'ألعاب صغيرة لتلعب وتكتشف مواهبك وتثق بنفسك.',cta1:'🎮 العب الآن',cta2:'👨‍👩‍👧 للآباء',bubble:'مرحباً! هل نلعب؟',
+ chips:['من 5 سنوات','Français و عربي','بلا إعلانات','بلا حساب'],gamesT:'اختر لعبتك',gamesS:'كل لعبة تدوم بضع دقائق. لا يوجد «خسرت»، فقط «جرّب مرة أخرى»!',
+ parentsT:'للآباء والمربّين',parentsS:'مختبر ألعاب صغير يقدّر الجهد وليس الأداء.',
+ cards:[['🛡️','بلا إعلانات ولا حساب ولا دردشة','لا اتصال بغرباء، ولا مشتريات، ولا إعلانات.'],['🔒','الخصوصية','الاسم واللغة والتقدّم تبقى على جهاز الطفل.'],['🌱','لا عقاب على الخطأ','الخطأ يعطي تلميحاً وتشجيعاً، والشارات تكافئ الجهد.'],['🗣️','ثنائي اللغة مع الصوت','كل شيء بالعربية والفرنسية، مع صوت يقرأ التعليمات (حسب الجهاز).']],
+ skillsT:'المهارات التي تنمّيها',skills:['الملاحظة','المنطق','الأرقام','الحروف','الروتين','المشاعر','الثقة بالنفس'],
+ disc:'هذه الألعاب أداة ترفيهية للاكتشاف. لا تُغني عن رأي مختص ولا تضع أي تشخيص.',foot:'مشروع شخصي من Wael Souabni',go:'العب'}};
+const $=id=>document.getElementById(id);
+let lang='fr';
+try{const l=localStorage.getItem('wgl-lang');if(l==='ar'||l==='fr')lang=l;else if((navigator.language||'').startsWith('ar'))lang='ar';}catch(e){}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function brand(){$('brand').innerHTML=[...'Wael Game Lab'].map((c,i)=>c===' '?'<span class="sp" aria-hidden="true"> </span>':`<span aria-hidden="true" style="--i:${i}">${c}</span>`).join('');}
+function render(){const t=I[lang],d=document.documentElement;d.lang=lang;d.dir=lang==='ar'?'rtl':'ltr';
+document.querySelectorAll('[data-t]').forEach(e=>{e.textContent=t[e.dataset.t];});
+$('lang').textContent=lang==='fr'?'العربية':'Français';
+$('chips').innerHTML=t.chips.map(c=>`<li>${esc(c)}</li>`).join('');
+$('skills').innerHTML=t.skills.map(c=>`<li>${esc(c)}</li>`).join('');
+$('pgrid').innerHTML=t.cards.map((c,i)=>`<div class="pc reveal" style="--d:${i}"><span aria-hidden="true">${c[0]}</span><h3>${esc(c[1])}</h3><p>${esc(c[2])}</p></div>`).join('');
+const k=lang==='ar'?4:3;
+$('grid').innerHTML=G.map((g,i)=>`<a class="game reveal" style="--c:${g[2]};--d:${i%4}" href="games/${g[0]}.html"><span class="em" aria-hidden="true">${g[1]}</span><b>${esc(g[k][0])}</b><small>${esc(g[k][1])}</small><u aria-hidden="true">${lang==='ar'?'◀':'▶'}</u></a>`).join('');
+watch();}
+let io=null;
+function watch(){const els=document.querySelectorAll('.reveal');
+if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return;}
+if(io)io.disconnect();io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+els.forEach(e=>io.observe(e));}
+$('lang').addEventListener('click',()=>{lang=lang==='fr'?'ar':'fr';try{localStorage.setItem('wgl-lang',lang);}catch(e){}render();});
+brand();render();
+</script>
+</body>
+</html>

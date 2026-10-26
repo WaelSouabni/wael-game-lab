@@ -1,0 +1,8 @@
+{
+  "name": "wael-game-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mini-jeux pour enfants (5 ans et plus), en français et en arabe.",
+  "scripts": { "test": "node tests/games.test.js" },
+  "license": "MIT"
+}
