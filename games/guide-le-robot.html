@@ -133,6 +133,26 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
+async function sayArabicNative(text){
+  if(!('speechSynthesis' in window))return false;
+  try{
+    loadVoices();
+    const voice=voiceFor('ar');
+    if(!voice)return false;
+    speechSynthesis.cancel();
+    return await new Promise(resolve=>{
+      const utterance=new SpeechSynthesisUtterance(text);
+      utterance.voice=voice;
+      utterance.lang=voice.lang||'ar';
+      utterance.rate=.88;
+      let finished=false;
+      const done=value=>{if(finished)return;finished=true;resolve(value);};
+      utterance.onend=()=>done(true);
+      utterance.onerror=()=>done(false);
+      speechSynthesis.speak(utterance);
+    });
+  }catch(error){return false;}
+}
 async function sayArabicOnline(text){
   // Arabic TTS runs through the site's Vercel function; the provider key never reaches the browser.
   const chunks=[];
@@ -145,12 +165,12 @@ async function sayArabicOnline(text){
   }
   if(remaining)chunks.push(remaining);
   for(const chunk of chunks){
-    const response=await fetch('/api/tts',{
+    let response;try{response=await fetch('/api/tts',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({text:chunk})
-    });
-    if(!response.ok){
+    });}catch(fetchError){if(await sayArabicNative(chunk))continue;throw fetchError;}
+    if(!response.ok){if(await sayArabicNative(chunk))continue;
       let code='tts_provider_failed';
       try{code=(await response.json()).error||code;}catch(e){}
       const error=new Error(code);
