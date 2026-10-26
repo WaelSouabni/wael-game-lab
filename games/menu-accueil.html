@@ -100,7 +100,7 @@ if(setup){$('sq').textContent=t().sq;$('sl').textContent=t().sl;$('ok').textCont
 $('hav').textContent=S.profile.a;$('hmsg').innerHTML=`${esc(t().hi(S.profile.n))}<small>${t().sub}</small>`;
 const li=S.lang==='ar'?'ar':'fr';
 $('menu').innerHTML=GROUPS.map((g,gi)=>`<h2>${g[S.lang==='ar'?1:0]}</h2><div class="grid" style="margin-bottom:18px">${GAMES.filter(x=>x.g===gi).map(x=>
-`<a class="g" style="--c:${x.c}" href="${x.u}" target="_blank" rel="noopener" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
+`<a class="g" style="--c:${x.c}" href="${x.u}" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
 $('avs').addEventListener('click',e=>{const b=e.target.closest('.avb');if(!b)return;S.pick=b.dataset.a;render();$('nm').focus();});
 $('ok').addEventListener('click',()=>{S.profile=cleanProfile({a:S.pick,n:$('nm').value});save('menu-profile',S.profile);S.editing=false;render();});
 $('nm').addEventListener('keydown',e=>{if(e.key==='Enter')$('ok').click();});
