@@ -97,17 +97,19 @@ function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-')
 let arabicTtsPromise=null;
 let arabicTtsReady=null;
 async function sayArabicOnline(text){
-  if(!arabicTtsReady){
-    if(!arabicTtsPromise){
-      arabicTtsPromise=import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm')
-        .then(({NabraTTS})=>NabraTTS.load({dtype:'fp16'}))
-        .then(tts=>{arabicTtsReady=tts;return tts;})
-        .catch(error=>{arabicTtsPromise=null;throw error;});
-    }
-    await arabicTtsPromise;
-    return false;
+  // Online Arabic speech workaround: play a hosted Arabic TTS audio stream.
+  // The browser can play cross-origin audio without CORS access to its bytes.
+  const chunks=String(text).match(/[\\s\\S]{1,180}/g)||[String(text)];
+  for(const chunk of chunks){
+    const url='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q='+encodeURIComponent(chunk);
+    const audio=new Audio(url);
+    audio.preload='auto';
+    await new Promise((resolve,reject)=>{
+      audio.addEventListener('ended',resolve,{once:true});
+      audio.addEventListener('error',()=>reject(new Error('Arabic audio stream failed')),{once:true});
+      audio.play().catch(reject);
+    });
   }
-  await arabicTtsReady.speak(text);
   return true;
 }
 async function say(text,silentMsg){
