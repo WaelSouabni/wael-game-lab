@@ -39,7 +39,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;fl
 <p id="hint" class="hint" hidden></p>
 <button id="next" class="primary" hidden>السؤال التالي ←</button>
 </section>
-<section id="end" class="end" hidden><div class="trophy" aria-hidden="true">🏆</div><h2 id="endTitle">برافو!</h2><p id="endText"></p><button id="replay" class="primary">نعاود نلعب 🌱</button></section>
+<section id="end" class="end" hidden><div class="trophy" aria-hidden="true">🏆</div><h2 id="endTitle">برافو!</h2><p id="endText"></p><button id="continueLevel" class="primary" hidden>المستوى التالي ←</button><button id="replay" class="primary" style="margin-top:10px">نعاود نلعب 🌱</button></section>
 <p class="progress-note" id="privacy">🌱 التقدّم والنجوم يتسجّلوا في جهازك فقط، من غير حساب.</p>
 </main>
 <script src="../assets/js/funis-progression.js"></script>
@@ -125,11 +125,11 @@ function choose(letter,button){if(finishedRound)return;const r=currentRound(),c=
  speak(c.correct+' '+wordFor(r)+'، '+r.letter);
  if(roundIndex+1>=LEVELS[level-1].count){$('next').hidden=false;$('next').textContent=c.next;}else{$('next').hidden=false;}
  }else{errors++;errorsThisRound++;button.classList.add('wrong');$('feedback').className='feedback try';$('feedback').textContent=c.wrong;if(errorsThisRound>=2){$('hint').textContent=c.hint+' ('+r.letter+')';$('hint').hidden=false;const right=Array.from($('choices').querySelectorAll('button')).find(b=>b.textContent===r.letter);if(right)right.style.borderColor='#e5a51b';}speak(c.wrong);}}
-function next(){if(!finishedRound)return;if(roundIndex+1<LEVELS[level-1].count){roundIndex++;renderRound();return;}const result=progress.completeLevel({level,score:Math.max(0,score-errors),maxScore:LEVELS[level-1].count});if(!result.ok){$('feedback').textContent='يرجى اختيار مستوى مفتوح.';return;}$('play').hidden=true;$('end').hidden=false;$('endTitle').textContent=copy[dialect?'derja':'fusha'].end;$('endText').textContent='⭐ '+result.stars+' / 3 · '+(dialect?'يعطيك الصحّة!':'أحسنت!')+' '+(dialect?'جمّعت':'جمعت')+' '+score+' / '+LEVELS[level-1].count+' إجابات صحيحة.';}
+function next(){if(!finishedRound)return;if(roundIndex+1<LEVELS[level-1].count){roundIndex++;renderRound();return;}const result=progress.completeLevel({level,score:Math.max(0,score-errors),maxScore:LEVELS[level-1].count});if(!result.ok){$('feedback').textContent='يرجى اختيار مستوى مفتوح.';return;}$('play').hidden=true;$('end').hidden=false;$('continueLevel').hidden=level>=5;$('endTitle').textContent=copy[dialect?'derja':'fusha'].end;$('endText').textContent='⭐ '+result.stars+' / 3 · '+(dialect?'يعطيك الصحّة!':'أحسنت!')+' '+(dialect?'جمّعت':'جمعت')+' '+score+' / '+LEVELS[level-1].count+' إجابات صحيحة.';}
 function startLevel(n){level=n;roundIndex=0;score=0;errors=0;errorsThisRound=0;finishedRound=false;const indices=LEVELS[level-1].indices;deck=shuffle(indices.map(i=>ROUNDS[i])).slice(0,LEVELS[level-1].count);$('play').hidden=false;$('end').hidden=true;renderHeader();renderRound();}
 $('listen').addEventListener('click',()=>speak(wordFor(currentRound())+'، '+currentRound().letter));
 $('next').addEventListener('click',next);
-$('replay').addEventListener('click',()=>startLevel(level));
+$('replay').addEventListener('click',()=>startLevel(level));\n$('continueLevel').addEventListener('click',()=>{if(level<5)progress.selectLevel(level+1);});
 $('voiceToggle').addEventListener('click',()=>{voiceOn=!voiceOn;if(!voiceOn)stopVoice();renderHeader();});
 $('dialectToggle').addEventListener('click',()=>{dialect=!dialect;stopVoice();renderHeader();if(!$('play').hidden)renderRound();});
 progress=window.FunisProgress.init('jardin-lettres',{totalLevels:5});
