@@ -133,7 +133,7 @@ $('replay').addEventListener('click',()=>startLevel(level));
 $('continueLevel').addEventListener('click',()=>{if(level<5)progress.selectLevel(level+1);});
 $('voiceToggle').addEventListener('click',()=>{voiceOn=!voiceOn;if(!voiceOn)stopVoice();renderHeader();});
 $('dialectToggle').addEventListener('click',()=>{dialect=!dialect;stopVoice();renderHeader();if(!$('play').hidden)renderRound();});
-progress=window.FunisProgress.init('jardin-lettres',{totalLevels:5});
+progress=window.FunisProgress.init('jardin-lettres',{totalLevels:5,mount:'.hero'});
 window.addEventListener('funis:level-changed',e=>{if(e.detail&&e.detail.gameId==='jardin-lettres')startLevel(e.detail.level);});
 window.addEventListener('funis:all-levels-complete',e=>{if(e.detail&&e.detail.gameId==='jardin-lettres'){$('endTitle').textContent='🏆 '+copy[dialect?'derja':'fusha'].end;}});
 const saved=progress.getProgress();startLevel(Math.min(5,Math.max(1,saved.unlocked||1)));
