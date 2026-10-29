@@ -20,7 +20,7 @@
   const GAME_IDS = new Set([
     'formes', 'suite', 'robot', 'ombre', 'compte', 'lettres', 'ordre',
     'humeur', 'compliments', 'lettres-mots', 'calcul', 'memoire-tunisie',
-    'environnement'
+    'environnement', 'jardin-lettres'
   ]);
 
   const COPY = {
