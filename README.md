@@ -1,6 +1,6 @@
 # 🎈 Wael Game Lab
 
-Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et en arabe** : observation, logique, nombres, lettres, routines, émotions et confiance en soi.
+Des mini-jeux gratuits pour les enfants dès **3 ans**, en **français et en arabe** : observation, logique, nombres, lettres, routines, émotions et confiance en soi.
 
 **Sans publicité, sans compte enfant, sans chat et sans installation sur l'appareil.** Les jeux sont des pages HTML ; la voix arabe en ligne passe par une fonction sécurisée hébergée sur Vercel.
 
@@ -15,12 +15,22 @@ Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et 
 | 🤖 Guide le petit robot | Logique, bases de la programmation | `games/guide-le-robot.html` |
 | 🕵️ Trouve l'ombre | Observation des détails | `games/trouve-lombre.html` |
 | 🔢 Compte les objets | Compter jusqu'à 10 | `games/compte-les-objets.html` |
-| 🔤 Les lettres | Première lettre d'un mot (alphabet français et arabe) | `games/les-lettres.html` |
+| 🔤 Les lettres | Première lettre d'un mot (alphabet français et arabe) | `games/les-lettres.html` |\n| 🌼 Le jardin des lettres | Reconnaître les lettres arabes et écouter les sons initiaux (3–5 ans) | `games/jardin-des-lettres.html` |
 | ⏰ Ma journée dans l'ordre | Routines et notion du temps | `games/ma-journee-dans-lordre.html` |
 | 😊 Mon humeur du jour | Mettre des mots sur ses émotions | `games/mon-humeur-du-jour.html` |
 | 🎁 La boîte à compliments | Découvrir ses forces, confiance en soi | `games/la-boite-a-compliments.html` |
 
 `games/menu-accueil.html` réunit les 9 jeux avec un profil simple (avatar et surnom).
+
+
+
+### 🌼 Le jardin des lettres (3–5 ans)
+
+- Cinq niveaux progressifs : 3, 4, 4, 5 puis 6 questions, avec davantage de choix à mesure que l'enfant avance.
+- Vocabulaire en arabe standard et tunisien (bouton « العربية الفصحى / تونسي »), images familières, grandes lettres tactiles, encouragements et indice après deux erreurs.
+- La consigne, le résultat et les indices s'affichent immédiatement sans attendre l'audio. La lecture arabe standard réutilise le proxy Vercel `/api/tts`; en mode tunisien, le jeu essaie une voix arabe locale. Si aucune voix arabe n'est disponible, le texte reste lisible et un message l'indique sans basculer silencieusement vers le français.
+- Progression et étoiles via `FunisProgress`, enregistrées dans `localStorage`; aucun compte et aucune dépendance payante ajoutée.
+- Animations légères, prise en charge de `prefers-reduced-motion`, mise en page responsive et navigation retour au menu.
 
 ## Principes de conception
 
