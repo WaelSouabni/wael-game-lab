@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8f8df">
+<title>حديقة الحروف — FunisLearn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<style>
+:root{--sky:#dff4ff;--grass:#dff5c9;--leaf:#397d43;--ink:#263b35;--soft:#5d756c;--card:#fffef8;--sun:#ffd35e;--pink:#ffdce8;--blue:#cceaff;--purple:#e5dcff}
+*{box-sizing:border-box}html{min-height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;min-height:100vh;color:var(--ink);font-family:'Cairo','Fredoka',system-ui,sans-serif;background:linear-gradient(180deg,var(--sky) 0%,#f2fbe9 54%,var(--grass) 100%);-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:4px solid #5b63c7;outline-offset:3px}
+.app{width:min(100%,800px);margin:auto;padding:12px 14px 28px;display:grid;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}h1{font-size:clamp(1.35rem,5vw,2rem);line-height:1.2;margin:0;font-weight:900}.tools{display:flex;gap:7px;flex-wrap:wrap}.tool{min-height:46px;min-width:46px;padding:7px 12px;border:2px solid var(--ink);border-radius:16px;background:var(--card);font-weight:700}.home{text-decoration:none;display:inline-grid;place-items:center}
+.hero{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px 12px;background:rgba(255,254,248,.88);border:3px solid var(--ink);border-radius:26px;padding:12px 16px;box-shadow:0 5px 0 rgba(38,59,53,.12)}.hero p{margin:0}.hero .lead{font-size:clamp(1rem,3.8vw,1.22rem);font-weight:700}.hero .sub{color:var(--soft);font-size:.94rem}.mascot{font-size:clamp(3.4rem,15vw,5.4rem);line-height:1;animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(38,59,53,.12))}.garden{position:relative;overflow:hidden;border:3px solid var(--ink);border-radius:28px;padding:16px;background:linear-gradient(180deg,#d8f2ff 0%,#eaf9ff 48%,#c8ecb5 49%,#b9e59d 100%);min-height:132px}.garden:before{content:"☁️　　　☁️";position:absolute;top:4px;inset-inline:12px;text-align:center;opacity:.75;font-size:1.4rem;pointer-events:none}.garden-plants{position:relative;display:flex;justify-content:center;align-items:end;gap:clamp(8px,4vw,24px);min-height:100px;padding-top:20px}.plant{font-size:clamp(2rem,8vw,3.4rem);transform-origin:bottom;animation:sway 3s ease-in-out infinite}.plant:nth-child(2n){animation-delay:-1s}.board{display:grid;gap:14px;background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:clamp(14px,4vw,22px);box-shadow:0 5px 0 rgba(38,59,53,.1)}.prompt{text-align:center;font-size:clamp(1.18rem,4.4vw,1.55rem);font-weight:900;margin:0;line-height:1.6}.word-card{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#f5f0ff;border:2px dashed #9986d6;border-radius:22px;padding:12px}.word-picture{font-size:clamp(3.6rem,15vw,5rem);line-height:1;animation:pop-in .4s ease-out}.word-text{font-size:clamp(1.3rem,5vw,1.8rem);font-weight:900}.listen{min-height:46px;padding:8px 16px;border:2px solid var(--ink);border-radius:16px;background:var(--blue);font-weight:800}.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.letter{min-width:0;min-height:clamp(76px,19vw,112px);border:3px solid var(--ink);border-radius:23px;background:#fff3c9;font-size:clamp(2.4rem,10vw,3.5rem);font-weight:900;box-shadow:0 4px 0 rgba(38,59,53,.12);transition:transform .16s,background .16s}.letter:nth-child(3n+2){background:var(--pink)}.letter:nth-child(3n){background:var(--purple)}.letter:active{transform:scale(.95)}.letter.good{background:#c9f1cf;animation:pop-in .35s}.letter.wrong{animation:shake .35s;opacity:.7}.letter:disabled{cursor:default}
+.feedback{min-height:3.2em;margin:0;text-align:center;font-size:clamp(1.05rem,4vw,1.3rem);font-weight:900;line-height:1.6}.feedback.good{color:#246c37}.feedback.try{color:#875124}.feedback .derja{display:block;font-size:.94em;font-weight:700;color:var(--soft)}
+.progress-note{text-align:center;color:var(--soft);font-weight:700;margin:0;font-size:.95rem}.primary{display:block;width:100%;min-height:56px;padding:12px 18px;border:3px solid var(--ink);border-radius:20px;background:var(--sun);font-size:1.15rem;font-weight:900;box-shadow:0 4px 0 rgba(38,59,53,.13)}.primary:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(38,59,53,.13)}.end{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:20px;text-align:center}.end .trophy{font-size:4rem}.end h2{margin:6px 0;font-size:1.5rem}.end p{line-height:1.7}.hint{background:#fff6d8;border-radius:14px;padding:8px 12px;text-align:center;font-weight:700;color:#72561b}
+[hidden]{display:none!important}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}@keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes pop-in{0%{transform:scale(.75);opacity:.4}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media(min-width:560px){.app{padding-top:20px}.choices{grid-template-columns:repeat(4,minmax(0,1fr))}.letter{min-height:110px}.hero{padding:16px 20px}.garden{min-height:155px}.garden-plants{min-height:120px}}
+@media(max-width:360px){.app{padding-inline:9px}.tools{gap:5px}.tool{padding-inline:8px}.board{padding:12px}.choices{gap:7px}.letter{border-radius:17px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><h1 id="title">🌼 حديقة الحروف</h1><nav class="tools" aria-label="أدوات اللعبة"><a class="tool home" href="menu-accueil.html" aria-label="العودة إلى القائمة">⌂</a><button class="tool" id="voiceToggle" aria-pressed="true">🔊 الصوت</button><button class="tool" id="dialectToggle" aria-pressed="false">تونسي</button></nav></header>
+<section class="hero" aria-label="مساعدة صديقة الحديقة"><div><p class="lead" id="greeting">عسلامة يا بطل! 🌱</p><p class="sub" id="intro">عاون الثعلب فلفول يلقى الحرف الصحيح.</p></div><div class="mascot" aria-hidden="true">🦊</div></section>
+<section class="garden" aria-hidden="true"><div class="garden-plants"><span class="plant">🌷</span><span class="plant">🌻</span><span class="plant">🌼</span><span class="plant">🦋</span><span class="plant">🌱</span></div></section>
+<section id="play" class="board">
+<p class="progress-note" id="round"></p>
+<p class="prompt" id="question">اسمع اسم الصورة واختار الحرف الأول.</p>
+<div class="word-card"><span class="word-picture" id="picture" aria-hidden="true">🍎</span><span class="word-text" id="word">تفاحة</span><button class="listen" id="listen">🔊 اسمع الكلمة</button></div>
+<div class="choices" id="choices" role="group" aria-label="اختار الحرف الصحيح"></div>
+<p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+<p id="hint" class="hint" hidden></p>
+<button id="next" class="primary" hidden>السؤال التالي ←</button>
+</section>
+<section id="end" class="end" hidden><div class="trophy" aria-hidden="true">🏆</div><h2 id="endTitle">برافو!</h2><p id="endText"></p><button id="replay" class="primary">نعاود نلعب 🌱</button></section>
+<p class="progress-note" id="privacy">🌱 التقدّم والنجوم يتسجّلوا في جهازك فقط، من غير حساب.</p>
+</main>
+<script src="../assets/js/funis-progression.js"></script>
+<script>
+'use strict';
+// Every round teaches the initial sound and visual form of an Arabic letter.
+// Word choices include standard Arabic and familiar Tunisian vocabulary.
+const ROUNDS = [
+ {emoji:'🍎', fusha:'تُفّاحة', derja:'تفّاحة', letter:'ت', options:['ت','ب','م']},
+ {emoji:'🐟', fusha:'سَمَكة', derja:'حوتة', letter:'س', options:['س','ش','ف']},
+ {emoji:'🌙', fusha:'قَمَر', derja:'قمر', letter:'ق', options:['ق','ك','ل']},
+ {emoji:'🏠', fusha:'بَيْت', derja:'دار', letter:'ب', options:['ب','ت','ث']},
+ {emoji:'🍌', fusha:'مَوْز', derja:'موز', letter:'م', options:['م','ن','ه']},
+ {emoji:'☀️', fusha:'شَمْس', derja:'شمس', letter:'ش', options:['ش','س','ص']},
+ {emoji:'🌹', fusha:'وَرْدة', derja:'وردة', letter:'و', options:['و','ر','ز']},
+ {emoji:'🐈', fusha:'قِطّة', derja:'قطوسة', letter:'ق', options:['ق','ف','ك']},
+ {emoji:'🥛', fusha:'حَليب', derja:'حليب', letter:'ح', options:['ح','ج','خ']},
+ {emoji:'🚗', fusha:'سَيّارة', derja:'كرهبة', letter:'س', options:['س','ش','ص']},
+ {emoji:'🐔', fusha:'دَجاجة', derja:'دجاجة', letter:'د', options:['د','ذ','ر']},
+ {emoji:'🍞', fusha:'خُبز', derja:'خبزة', letter:'خ', options:['خ','ح','ج']},
+ {emoji:'🐘', fusha:'فيل', derja:'فيل', letter:'ف', options:['ف','ق','ك']},
+ {emoji:'🦆', fusha:'بَطّة', derja:'بَطّة', letter:'ب', options:['ب','ت','ن']},
+ {emoji:'🐝', fusha:'نَحلة', derja:'نحلة', letter:'ن', options:['ن','ت','ث']},
+ {emoji:'🥒', fusha:'خِيار', derja:'فقّوس', letter:'خ', options:['خ','ح','ج']},
+ {emoji:'🍋', fusha:'لَيْمون', derja:'قارص', letter:'ل', options:['ل','م','ن']},
+ {emoji:'🧸', fusha:'دُمْية', derja:'دمية', letter:'د', options:['د','ر','ذ']},
+ {emoji:'🐇', fusha:'أَرْنَب', derja:'أرنب', letter:'أ', options:['أ','ا','إ']},
+ {emoji:'🌳', fusha:'شَجَرة', derja:'شجرة', letter:'ش', options:['ش','س','ج']},
+ {emoji:'🦁', fusha:'أَسَد', derja:'سبع', letter:'أ', options:['أ','ا','ب']},
+ {emoji:'🧀', fusha:'جُبْن', derja:'جبن', letter:'ج', options:['ج','ح','خ']},
+ {emoji:'🍇', fusha:'عِنَب', derja:'عنب', letter:'ع', options:['ع','غ','ف']},
+ {emoji:'🦋', fusha:'فَراشة', derja:'فراشة', letter:'ف', options:['ف','ق','ب']},
+ {emoji:'🐢', fusha:'سُلَحْفاة', derja:'سلحفاة', letter:'س', options:['س','ش','ص']},
+ {emoji:'🍊', fusha:'بُرْتُقال', derja:'برتقال', letter:'ب', options:['ب','ت','ث']},
+ {emoji:'🐑', fusha:'خَروف', derja:'علّوش', letter:'خ', options:['خ','ح','ج']},
+ {emoji:'🐦', fusha:'عُصْفور', derja:'عصفور', letter:'ع', options:['ع','غ','ف']},
+ {emoji:'🚲', fusha:'دَرّاجة', derja:'بسكليت', letter:'د', options:['د','ذ','ر']},
+ {emoji:'🍓', fusha:'فَراولة', derja:'فريز', letter:'ف', options:['ف','ق','ك']},
+ {emoji:'🐄', fusha:'بَقَرة', derja:'بقرة', letter:'ب', options:['ب','ت','ث']}
+];
+const LEVELS = [
+ {count:3, label:'التعرّف على الحروف', derja:'نتعرّفوا على الحروف', indices:[0,3,4,2,1,5]},
+ {count:4, label:'الحرف الأوّل', derja:'شنوّة أوّل حرف؟', indices:[6,7,8,9,10,11]},
+ {count:4, label:'نسمع ونختار', derja:'نسمعوا ونختاروا', indices:[12,13,14,15,16,17]},
+ {count:5, label:'حروف جديدة', derja:'نكتشفوا حروف جداد', indices:[18,19,20,21,22,23]},
+ {count:6, label:'مغامرة الحروف الكبيرة', derja:'مغامرة الحروف', indices:[24,25,26,27,28,29]}
+];
+const $=id=>document.getElementById(id);
+let dialect=false,voiceOn=true,progress=null,level=1,roundIndex=0,deck=[],score=0,errors=0,errorsThisRound=0,finishedRound=false;
+let voiceRequest=0,voiceController=null,voiceAudio=null;
+const shuffle=a=>{const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+const wordFor=r=>dialect?r.derja:r.fusha;
+const copy={
+fusha:{greeting:'مرحباً يا بطل الحروف! 🌱',intro:'ساعد الثعلب فلفول في العثور على الحرف الأول من الكلمة.',question:'استمع إلى اسم الصورة، ثم اختر الحرف الأول.',listen:'🔊 استمع إلى الكلمة',next:'السؤال التالي ←',correct:'أحسنت! هذا هو الحرف الصحيح! ⭐',wrong:'محاولة جميلة! جرّب مرة أخرى.',hint:'تلميح: انظر إلى الحرف الذي تبدأ به الكلمة.',end:'أحسنت! أنهيت مغامرة هذا المستوى!',replay:'العب هذا المستوى من جديد 🌱',privacy:'🌱 يُحفظ تقدمك ونجومك على هذا الجهاز فقط، من دون حساب.',round:'السؤال',sound:'🔊 الصوت',mute:'🔇 الصوت'},
+derja:{greeting:'عسلامة يا بطل الحروف! 🌱',intro:'عاون الثعلب فلفول يلقى أوّل حرف في الكلمة.',question:'اسمع اسم التصويرة واختار أوّل حرف.',listen:'🔊 اسمع الكلمة',next:'السؤال اللي بعدو ←',correct:'يعطيك الصحّة! هذا هو الحرف الصحيح! ⭐',wrong:'محاولة باهية! جرّب مرّة أخرى.',hint:'تلميحة: شوف شنوّة أوّل حرف في الكلمة.',end:'برافو عليك! كمّلت مغامرة المستوى هذا!',replay:'نعاودوا المستوى هذا 🌱',privacy:'🌱 تقدّمك ونجومك يتسجّلوا في الجهاز هذا برك، من غير حساب.',round:'السؤال',sound:'🔊 الصوت',mute:'🔇 الصوت'}
+};
+function stopVoice(){if(voiceController){voiceController.abort();voiceController=null;}if(voiceAudio){try{voiceAudio.pause();voiceAudio.currentTime=0;}catch(e){}voiceAudio=null;}if('speechSynthesis'in window){try{speechSynthesis.cancel();}catch(e){}}}
+async function speak(text){
+ const id=++voiceRequest;stopVoice();if(!voiceOn)return;
+ // Keep voice optional: the visual question/result is rendered immediately and never awaits audio.
+ if(!text)return;
+ if(!dialect){
+  const controller=new AbortController();voiceController=controller;
+  try{const response=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:String(text).slice(0,300)}),signal:controller.signal});
+   if(id!==voiceRequest)return;
+   if(response.ok){const blob=await response.blob();if(id!==voiceRequest)return;if(blob.size){const url=URL.createObjectURL(blob),audio=new Audio(url);voiceAudio=audio;try{await new Promise(resolve=>{audio.addEventListener('ended',()=>resolve(true),{once:true});audio.addEventListener('error',()=>resolve(false),{once:true});audio.play().catch(()=>resolve(false));});}finally{if(voiceAudio===audio)voiceAudio=null;URL.revokeObjectURL(url);}if(id===voiceRequest)return;}}
+  }catch(e){if(id!==voiceRequest)return;}finally{if(voiceController===controller)voiceController=null;}
+  if(id!==voiceRequest)return;
+ }
+ // Tunisian dialect and fallback use the device's available Arabic voice; never silently substitute French.
+ try{if('speechSynthesis'in window){const voices=speechSynthesis.getVoices()||[],voice=voices.find(v=>String(v.lang||'').toLowerCase().replace('_','-').startsWith('ar'));if(voice){const utterance=new SpeechSynthesisUtterance(text);utterance.lang=voice.lang||'ar';utterance.voice=voice;utterance.rate=.84;speechSynthesis.speak(utterance);return;}}}catch(e){}
+ $('voiceNote').hidden=false;
+}
+function renderHeader(){const c=copy[dialect?'derja':'fusha'];$('greeting').textContent=c.greeting;$('intro').textContent=c.intro;$('question').textContent=c.question;$('listen').textContent=c.listen;$('next').textContent=c.next;$('replay').textContent=c.replay;$('privacy').textContent=c.privacy;$('voiceToggle').textContent=voiceOn?c.sound:c.mute;$('voiceToggle').setAttribute('aria-pressed',String(voiceOn));$('dialectToggle').textContent=dialect?'العربية الفصحى':'تونسي';$('dialectToggle').setAttribute('aria-pressed',String(dialect));$('round').textContent='⭐ '+copy[dialect?'derja':'fusha'].round+' '+(roundIndex+1)+' / '+LEVELS[level-1].count+' · '+(dialect?LEVELS[level-1].derja:LEVELS[level-1].label);}
+function currentRound(){return deck[roundIndex];}
+function renderRound(){const r=currentRound(),c=copy[dialect?'derja':'fusha'];finishedRound=false;errorsThisRound=0;$('feedback').textContent='';$('feedback').className='feedback';$('hint').hidden=true;$('next').hidden=true;$('picture').textContent=r.emoji;$('word').textContent=wordFor(r);$('question').textContent=c.question;$('round').textContent='⭐ '+c.round+' '+(roundIndex+1)+' / '+LEVELS[level-1].count+' · '+(dialect?LEVELS[level-1].derja:LEVELS[level-1].label);
+ const options=shuffle(r.options);$('choices').innerHTML='';options.forEach(letter=>{const b=document.createElement('button');b.type='button';b.className='letter';b.textContent=letter;b.setAttribute('aria-label',letter);b.addEventListener('click',()=>choose(letter,b));$('choices').appendChild(b);});
+}
+function choose(letter,button){if(finishedRound)return;const r=currentRound(),c=copy[dialect?'derja':'fusha'];if(letter===r.letter){finishedRound=true;score++;button.classList.add('good');$('choices').querySelectorAll('button').forEach(b=>b.disabled=true);$('feedback').className='feedback good';$('feedback').textContent=c.correct;$('hint').hidden=true;
+ // Do not delay result text or next-question UI while audio plays.
+ speak(c.correct+' '+wordFor(r)+'، '+r.letter);
+ if(roundIndex+1>=LEVELS[level-1].count){$('next').hidden=false;$('next').textContent=c.next;}else{$('next').hidden=false;}
+ }else{errors++;errorsThisRound++;button.classList.add('wrong');$('feedback').className='feedback try';$('feedback').textContent=c.wrong;if(errorsThisRound>=2){$('hint').textContent=c.hint+' ('+r.letter+')';$('hint').hidden=false;const right=$('choices').querySelector('button');if(right&&!right.classList.contains('wrong'))right.style.borderColor='#e5a51b';}speak(c.wrong);}}
+function next(){if(!finishedRound)return;if(roundIndex+1<LEVELS[level-1].count){roundIndex++;renderRound();return;}const result=progress.completeLevel({level,score,maxScore:LEVELS[level-1].count});if(!result.ok){$('feedback').textContent='يرجى اختيار مستوى مفتوح.';return;}$('play').hidden=true;$('end').hidden=false;$('endTitle').textContent=copy[dialect?'derja':'fusha'].end;$('endText').textContent='⭐ '+result.stars+' / 3 · '+(dialect?'يعطيك الصحّة!':'أحسنت!')+' '+(dialect?'جمّعت':'جمعت')+' '+score+' / '+LEVELS[level-1].count+' إجابات صحيحة.';}
+function startLevel(n){level=n;roundIndex=0;score=0;errors=0;errorsThisRound=0;finishedRound=false;const indices=LEVELS[level-1].indices;deck=shuffle(indices.map(i=>ROUNDS[i])).slice(0,LEVELS[level-1].count);$('play').hidden=false;$('end').hidden=true;renderHeader();renderRound();}
+$('listen').addEventListener('click',()=>speak(wordFor(currentRound())+'، '+currentRound().letter));
+$('next').addEventListener('click',next);
+$('replay').addEventListener('click',()=>startLevel(level));
+$('voiceToggle').addEventListener('click',()=>{voiceOn=!voiceOn;if(!voiceOn)stopVoice();renderHeader();});
+$('dialectToggle').addEventListener('click',()=>{dialect=!dialect;stopVoice();renderHeader();if(!$('play').hidden)renderRound();});
+progress=window.FunisProgress.init('jardin-lettres',{totalLevels:5});
+window.addEventListener('funis:level-changed',e=>{if(e.detail&&e.detail.gameId==='jardin-lettres')startLevel(e.detail.level);});
+window.addEventListener('funis:all-levels-complete',e=>{if(e.detail&&e.detail.gameId==='jardin-lettres'){$('endTitle').textContent='🏆 '+copy[dialect?'derja':'fusha'].end;}});
+const saved=progress.getProgress();startLevel(Math.min(5,Math.max(1,saved.unlocked||1)));
+</script>
+</body>
+</html>
