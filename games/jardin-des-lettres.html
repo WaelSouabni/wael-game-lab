@@ -35,6 +35,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;fl
 <div class="word-card"><span class="word-picture" id="picture" aria-hidden="true">🍎</span><span class="word-text" id="word">تفاحة</span><button class="listen" id="listen">🔊 اسمع الكلمة</button></div>
 <div class="choices" id="choices" role="group" aria-label="اختار الحرف الصحيح"></div>
 <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+<p id="voiceNote" hidden class="progress-note">تعذّر تشغيل الصوت العربي. جرّب جهازاً يدعم العربية أو اضغط للاستماع من جديد.</p>
 <p id="hint" class="hint" hidden></p>
 <button id="next" class="primary" hidden>السؤال التالي ←</button>
 </section>
@@ -121,7 +122,7 @@ function choose(letter,button){if(finishedRound)return;const r=currentRound(),c=
  // Do not delay result text or next-question UI while audio plays.
  speak(c.correct+' '+wordFor(r)+'، '+r.letter);
  if(roundIndex+1>=LEVELS[level-1].count){$('next').hidden=false;$('next').textContent=c.next;}else{$('next').hidden=false;}
- }else{errors++;errorsThisRound++;button.classList.add('wrong');$('feedback').className='feedback try';$('feedback').textContent=c.wrong;if(errorsThisRound>=2){$('hint').textContent=c.hint+' ('+r.letter+')';$('hint').hidden=false;const right=$('choices').querySelector('button');if(right&&!right.classList.contains('wrong'))right.style.borderColor='#e5a51b';}speak(c.wrong);}}
+ }else{errors++;errorsThisRound++;button.classList.add('wrong');$('feedback').className='feedback try';$('feedback').textContent=c.wrong;if(errorsThisRound>=2){$('hint').textContent=c.hint+' ('+r.letter+')';$('hint').hidden=false;const right=Array.from($('choices').querySelectorAll('button')).find(b=>b.textContent===r.letter);if(right)right.style.borderColor='#e5a51b';}speak(c.wrong);}}
 function next(){if(!finishedRound)return;if(roundIndex+1<LEVELS[level-1].count){roundIndex++;renderRound();return;}const result=progress.completeLevel({level,score,maxScore:LEVELS[level-1].count});if(!result.ok){$('feedback').textContent='يرجى اختيار مستوى مفتوح.';return;}$('play').hidden=true;$('end').hidden=false;$('endTitle').textContent=copy[dialect?'derja':'fusha'].end;$('endText').textContent='⭐ '+result.stars+' / 3 · '+(dialect?'يعطيك الصحّة!':'أحسنت!')+' '+(dialect?'جمّعت':'جمعت')+' '+score+' / '+LEVELS[level-1].count+' إجابات صحيحة.';}
 function startLevel(n){level=n;roundIndex=0;score=0;errors=0;errorsThisRound=0;finishedRound=false;const indices=LEVELS[level-1].indices;deck=shuffle(indices.map(i=>ROUNDS[i])).slice(0,LEVELS[level-1].count);$('play').hidden=false;$('end').hidden=true;renderHeader();renderRound();}
 $('listen').addEventListener('click',()=>speak(wordFor(currentRound())+'، '+currentRound().letter));
