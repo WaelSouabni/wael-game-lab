@@ -47,6 +47,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;fl
 'use strict';
 // Every round teaches the initial sound and visual form of an Arabic letter.
 // Word choices include standard Arabic and familiar Tunisian vocabulary.
+// LOGIC-START
 const ROUNDS = [
  {emoji:'🍎', fusha:'تُفّاحة', derja:'تفّاحة', letter:'ت', options:['ت','ب','م']},
  {emoji:'🐟', fusha:'سَمَكة', derja:'حوتة', letter:'س', options:['س','ش','ف']},
@@ -91,6 +92,7 @@ const $=id=>document.getElementById(id);
 let dialect=false,voiceOn=true,progress=null,level=1,roundIndex=0,deck=[],score=0,errors=0,errorsThisRound=0,finishedRound=false;
 let voiceRequest=0,voiceController=null,voiceAudio=null;
 const shuffle=a=>{const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+// LOGIC-END
 const wordFor=r=>dialect?r.derja:r.fusha;
 const copy={
 fusha:{greeting:'مرحباً يا بطل الحروف! 🌱',intro:'ساعد الثعلب فلفول في العثور على الحرف الأول من الكلمة.',question:'استمع إلى اسم الصورة، ثم اختر الحرف الأول.',listen:'🔊 استمع إلى الكلمة',next:'السؤال التالي ←',correct:'أحسنت! هذا هو الحرف الصحيح! ⭐',wrong:'محاولة جميلة! جرّب مرة أخرى.',hint:'تلميح: انظر إلى الحرف الذي تبدأ به الكلمة.',end:'أحسنت! أنهيت مغامرة هذا المستوى!',replay:'العب هذا المستوى من جديد 🌱',privacy:'🌱 يُحفظ تقدمك ونجومك على هذا الجهاز فقط، من دون حساب.',round:'السؤال',sound:'🔊 الصوت',mute:'🔇 الصوت'},
