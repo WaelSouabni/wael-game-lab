@@ -1,0 +1,44 @@
+/* FunisLearn shared progression UI — responsive, RTL-aware and reduced-motion friendly. */
+.funis-progress {
+  --fp-ink: var(--ink, #2a2038);
+  --fp-card: var(--card, #fff);
+  --fp-soft: var(--soft, #6a5d82);
+  --fp-sun: var(--sun, #ffc83d);
+  width: min(100% - 28px, 720px);
+  margin: 10px auto 18px;
+  padding: 14px;
+  border: 2px solid var(--fp-ink);
+  border-radius: 22px;
+  background: var(--fp-card);
+  color: var(--fp-ink);
+  font: inherit;
+}
+.funis-progress__top { display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; }
+.funis-progress__count { white-space:nowrap; }
+.funis-progress__track { height:12px; margin:10px 0 12px; overflow:hidden; border:2px solid var(--fp-ink); border-radius:999px; background:color-mix(in srgb,var(--fp-card) 75%,var(--fp-ink)); }
+.funis-progress__fill { display:block; width:0; height:100%; border-radius:inherit; background:var(--fp-sun); transition:width .35s ease; }
+.funis-progress__levels { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; }
+.funis-progress__level { display:grid; place-items:center; min-width:0; min-height:38px; border:2px solid var(--fp-ink); border-radius:12px; background:var(--fp-card); font-weight:700; }
+.funis-progress__level.is-current { background:var(--fp-sun); transform:translateY(-2px); }
+.funis-progress__level.is-done { background:var(--leaf,#2f8f55); color:#fff; }
+.funis-progress__level.is-locked { opacity:.55; }
+.funis-progress__stars { margin:10px 0 0; text-align:center; font-weight:700; }
+
+.funis-celebration { position:fixed; z-index:2147483000; inset:0; display:grid; place-items:center; padding:18px; font:inherit; color:#2a2038; }
+.funis-celebration__backdrop { position:absolute; inset:0; background:rgba(20,15,35,.62); animation:funis-fade-in .2s ease-out; }
+.funis-celebration__card { position:relative; width:min(100%,430px); padding:28px 20px 22px; overflow:hidden; border:4px solid #2a2038; border-radius:30px; background:#fffdf5; text-align:center; box-shadow:0 18px 55px rgba(0,0,0,.25); animation:funis-pop-in .35s cubic-bezier(.2,1.5,.5,1); }
+.funis-celebration__burst { font-size:1.35rem; letter-spacing:.25rem; opacity:.3; }
+.funis-celebration__burst.is-animated { animation:funis-sparkle 1s ease-in-out infinite alternate; }
+.funis-celebration__trophy { margin:8px 0; font-size:4.4rem; animation:funis-bounce .65s ease-in-out 2; }
+.funis-celebration__card h2 { margin:8px 0 10px; font-size:clamp(1.35rem,5vw,1.8rem); line-height:1.25; }
+.funis-celebration__reward { margin:8px 0; font-weight:700; }
+.funis-celebration__earned { margin:12px 0 18px; font-size:2.1rem; letter-spacing:.15rem; }
+.funis-celebration__button { min-height:54px; width:100%; border:3px solid #2a2038; border-radius:18px; padding:10px 18px; background:#ffc83d; color:#2a2038; font:inherit; font-weight:700; cursor:pointer; }
+.funis-celebration__button:focus-visible { outline:4px solid #4d64c8; outline-offset:4px; }
+[dir="rtl"] .funis-progress,[dir="rtl"] .funis-celebration { font-family:'Cairo','Fredoka',system-ui,sans-serif; }
+@keyframes funis-fade-in { from { opacity:0; } to { opacity:1; } }
+@keyframes funis-pop-in { from { opacity:0; transform:translateY(14px) scale(.92); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes funis-bounce { 0%,100% { transform:translateY(0) rotate(0); } 45% { transform:translateY(-12px) rotate(-5deg); } 70% { transform:translateY(0) rotate(5deg); } }
+@keyframes funis-sparkle { from { transform:scale(.98); opacity:.55; } to { transform:scale(1.06); opacity:1; } }
+@media (max-width:380px) { .funis-progress { padding:10px; } .funis-progress__levels { gap:5px; } .funis-progress__level { min-height:34px; border-radius:9px; } }
+@media (prefers-reduced-motion:reduce) { .funis-progress *, .funis-celebration * { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }

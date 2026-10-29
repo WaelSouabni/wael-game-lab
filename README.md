@@ -1,6 +1,6 @@
 # 🎈 Wael Game Lab
 
-Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et en arabe** : observation, logique, nombres, lettres, routines, émotions et confiance en soi.
+Des mini-jeux gratuits pour les enfants dès **3 ans**, en **français et en arabe** : observation, logique, nombres, lettres, routines, émotions et confiance en soi.
 
 **Sans publicité, sans compte enfant, sans chat et sans installation sur l'appareil.** Les jeux sont des pages HTML ; la voix arabe en ligne passe par une fonction sécurisée hébergée sur Vercel.
 
@@ -15,12 +15,22 @@ Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et 
 | 🤖 Guide le petit robot | Logique, bases de la programmation | `games/guide-le-robot.html` |
 | 🕵️ Trouve l'ombre | Observation des détails | `games/trouve-lombre.html` |
 | 🔢 Compte les objets | Compter jusqu'à 10 | `games/compte-les-objets.html` |
-| 🔤 Les lettres | Première lettre d'un mot (alphabet français et arabe) | `games/les-lettres.html` |
+| 🔤 Les lettres | Première lettre d'un mot (alphabet français et arabe) | `games/les-lettres.html` |\n| 🌼 Le jardin des lettres | Reconnaître les lettres arabes et écouter les sons initiaux (3–5 ans) | `games/jardin-des-lettres.html` |
 | ⏰ Ma journée dans l'ordre | Routines et notion du temps | `games/ma-journee-dans-lordre.html` |
 | 😊 Mon humeur du jour | Mettre des mots sur ses émotions | `games/mon-humeur-du-jour.html` |
 | 🎁 La boîte à compliments | Découvrir ses forces, confiance en soi | `games/la-boite-a-compliments.html` |
 
 `games/menu-accueil.html` réunit les 9 jeux avec un profil simple (avatar et surnom).
+
+
+
+### 🌼 Le jardin des lettres (3–5 ans)
+
+- Cinq niveaux progressifs : 3, 4, 4, 5 puis 6 questions, avec davantage de choix à mesure que l'enfant avance.
+- Vocabulaire en arabe standard et tunisien (bouton « العربية الفصحى / تونسي »), images familières, grandes lettres tactiles, encouragements et indice après deux erreurs.
+- La consigne, le résultat et les indices s'affichent immédiatement sans attendre l'audio. La lecture arabe standard réutilise le proxy Vercel `/api/tts`; en mode tunisien, le jeu essaie une voix arabe locale. Si aucune voix arabe n'est disponible, le texte reste lisible et un message l'indique sans basculer silencieusement vers le français.
+- Progression et étoiles via `FunisProgress`, enregistrées dans `localStorage`; aucun compte et aucune dépendance payante ajoutée.
+- Animations légères, prise en charge de `prefers-reduced-motion`, mise en page responsive et navigation retour au menu.
 
 ## Principes de conception
 
@@ -42,6 +52,47 @@ Des mini-jeux gratuits pour les enfants de **5 ans et plus**, en **français et 
 Ne jamais mettre la clé dans un fichier HTML, GitHub ou du JavaScript côté navigateur.
 
 > Ces jeux sont un outil ludique de découverte. Ils ne remplacent pas l'avis d'un professionnel et ne posent aucun diagnostic.
+
+## Progression commune FunisLearn (5 niveaux)
+
+Le moteur partagé est disponible dans `assets/js/funis-progression.js` et son interface dans `assets/css/funis-progression.css`. Il est sans dépendance et conserve les données localement dans `localStorage` sous la clé `funislearn-progress-v1`.
+
+### Contrat d'intégration d'un jeu
+
+Chaque page de jeu doit charger les deux ressources avec des chemins relatifs adaptés à son emplacement, puis initialiser le moteur avec son identifiant stable :
+
+```html
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<script src="../assets/js/funis-progression.js"></script>
+```
+
+```js
+const progression = FunisProgress.init('formes', { totalLevels: 5 });
+const niveauActuel = progression.getCurrentLevel();
+
+// Appeler uniquement après la réussite réelle du niveau.
+// Le score doit refléter la performance du jeu (score et score maximal).
+progression.completeLevel({
+  level: niveauActuel,
+  score: scoreObtenu,
+  maxScore: scoreMaximum
+});
+```
+
+Le moteur expose aussi `selectLevel(level)`, `getProgress()`, `reset()` et les événements `funis:level-completed`, `funis:level-changed` et `funis:all-levels-complete`. Le jeu doit écouter `funis:level-changed` pour générer les exercices correspondant au niveau choisi. Ne pas déclarer un niveau réussi depuis un simple clic ou un chargement de page.
+
+La page de menu lit les données enregistrées et affiche les étoiles et le niveau de progression. Les données restent sur l'appareil et ne sont pas synchronisées entre navigateurs ou appareils. Le moteur respecte `prefers-reduced-motion` et utilise des textes français/arabe selon la langue de la page.
+
+**Important :** le moteur commun et l'affichage du menu sont ajoutés dans la branche de travail, mais chaque jeu doit encore être raccordé à son propre événement de réussite et à sa difficulté pédagogique avant que sa progression soit active de bout en bout. Cette étape doit être faite jeu par jeu pour préserver la logique existante et la voix arabe.
+
+### Vérifications avant publication
+
+- Réussir un niveau et vérifier que les étoiles sont enregistrées.
+- Actualiser la page et confirmer que le niveau débloqué est conservé.
+- Vérifier qu'un niveau verrouillé ne peut pas être sélectionné.
+- Tester les textes en arabe avec `dir="rtl"` et la lecture vocale existante.
+- Tester sur téléphone, clavier et avec la préférence de réduction des animations activée.
+- Effacer les données du site uniquement dans un environnement de test pour vérifier le cas d'une première visite.
 
 ## Lancer en local
 

@@ -6,6 +6,7 @@
 <title>Mon petit coin de jeux</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
 <style>
 :root{--bg:#f4f1ff;--ink:#2a2038;--soft:#6a5d82;--card:#ffffff;--sun:#ffc83d;--ring:#2a2038;--leaf:#2f8f55;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -38,7 +39,7 @@ h2{margin:0 0 10px;font-size:1.3rem}
 .g:active{transform:scale(.96)}
 .g span{font-size:2.6rem;line-height:1}
 .g b{font-size:1.15rem;line-height:1.2}
-.g small{font-size:.92rem;font-weight:500;color:#4b3e63}
+.g small{font-size:.92rem;font-weight:500;color:#4b3e63}.g .gprogress{font-size:.82rem;font-weight:700;color:#2f6848;margin-top:5px}
 .g i{position:absolute;top:8px;inset-inline-end:10px;background:var(--leaf);color:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-style:normal;font-weight:700}
 .note{margin:0;font-size:.92rem;color:var(--soft);text-align:center}
 [hidden]{display:none!important}
@@ -59,6 +60,7 @@ h2{margin:0 0 10px;font-size:1.3rem}
   <main id="menu"></main>
   <p class="note" id="adult"></p>
 </div>
+<script src="../assets/js/funis-progression.js"></script>
 <script>
 // LOGIC-START
 const BASE='';
@@ -69,6 +71,7 @@ const GAMES=[
 {id:'ombre',g:0,c:'#d8c9ff',e:'🕵️',u:BASE+'trouve-lombre.html',fr:['Trouve l’ombre','Bien observer'],ar:['اعثر على الظل','ملاحظة دقيقة']},
 {id:'compte',g:1,c:'#d3eb9a',e:'🔢',u:BASE+'compte-les-objets.html',fr:['Compte les objets','Compter jusqu’à 10'],ar:['عُدّ الأشياء','العدّ حتى 10']},
 {id:'lettres',g:1,c:'#b5e6f2',e:'🔤',u:BASE+'les-lettres.html',fr:['Les lettres','Lettres françaises et arabes'],ar:['الحروف','حروف عربية وفرنسية']},
+{id:'jardin-lettres',g:1,c:'#c6ebcd',e:'🌼',u:BASE+'jardin-des-lettres.html',fr:['Le jardin des lettres','Découvrir les lettres arabes'],ar:['حديقة الحروف','نكتشف الحروف العربية']},
 {id:'ordre',g:2,c:'#c6ebcd',e:'⏰',u:BASE+'ma-journee-dans-lordre.html',fr:['Ma journée dans l’ordre','Routines et temps'],ar:['يومي بالترتيب','الروتين والوقت']},
 {id:'humeur',g:2,c:'#fbd3cb',e:'😊',u:BASE+'mon-humeur-du-jour.html',fr:['Mon humeur du jour','Mettre des mots sur ses émotions'],ar:['مزاجي اليوم','التعبير عن مشاعري']},
 {id:'compliments',g:2,c:'#ffe49a',e:'🎁',u:BASE+'la-boite-a-compliments.html',fr:['La boîte à compliments','Découvrir ses forces'],ar:['صندوق المجاملات','اكتشاف نقاط قوتي']},
@@ -104,7 +107,7 @@ if(setup){$('sq').textContent=t().sq;$('sl').textContent=t().sl;$('ok').textCont
 $('hav').textContent=S.profile.a;$('hmsg').innerHTML=`${esc(t().hi(S.profile.n))}<small>${t().sub}</small>`;
 const li=S.lang==='ar'?'ar':'fr';
 $('menu').innerHTML=GROUPS.map((g,gi)=>`<h2>${g[S.lang==='ar'?1:0]}</h2><div class="grid" style="margin-bottom:18px">${GAMES.filter(x=>x.g===gi).map(x=>
-`<a class="g" style="--c:${x.c}" href="${x.u}" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
+`<a class="g" style="--c:${x.c}" href="${x.u}" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${(()=>{let p={};try{p=window.FunisProgress.getAllProgress()[x.id]||{};}catch(e){}const done=Array.isArray(p.completed)?p.completed.length:0;const stars=p.stars&&typeof p.stars==="object"?Object.values(p.stars).reduce((a,n)=>a+(Number(n)||0),0):0;return `<small class="gprogress">⭐ ${stars} · ${S.lang==="ar"?"المستوى":"Niveau"} ${Math.min(5,done+1)}/5</small>`;})()}${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
 $('avs').addEventListener('click',e=>{const b=e.target.closest('.avb');if(!b)return;S.pick=b.dataset.a;render();$('nm').focus();});
 $('ok').addEventListener('click',()=>{S.profile=cleanProfile({a:S.pick,n:$('nm').value});save('menu-profile',S.profile);S.editing=false;render();});
 $('nm').addEventListener('keydown',e=>{if(e.key==='Enter')$('ok').click();});
