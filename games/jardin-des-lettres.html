@@ -129,7 +129,8 @@ function next(){if(!finishedRound)return;if(roundIndex+1<LEVELS[level-1].count){
 function startLevel(n){level=n;roundIndex=0;score=0;errors=0;errorsThisRound=0;finishedRound=false;const indices=LEVELS[level-1].indices;deck=shuffle(indices.map(i=>ROUNDS[i])).slice(0,LEVELS[level-1].count);$('play').hidden=false;$('end').hidden=true;renderHeader();renderRound();}
 $('listen').addEventListener('click',()=>speak(wordFor(currentRound())+'، '+currentRound().letter));
 $('next').addEventListener('click',next);
-$('replay').addEventListener('click',()=>startLevel(level));\n$('continueLevel').addEventListener('click',()=>{if(level<5)progress.selectLevel(level+1);});
+$('replay').addEventListener('click',()=>startLevel(level));
+$('continueLevel').addEventListener('click',()=>{if(level<5)progress.selectLevel(level+1);});
 $('voiceToggle').addEventListener('click',()=>{voiceOn=!voiceOn;if(!voiceOn)stopVoice();renderHeader();});
 $('dialectToggle').addEventListener('click',()=>{dialect=!dialect;stopVoice();renderHeader();if(!$('play').hidden)renderRound();});
 progress=window.FunisProgress.init('jardin-lettres',{totalLevels:5});
