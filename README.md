@@ -43,6 +43,47 @@ Ne jamais mettre la clé dans un fichier HTML, GitHub ou du JavaScript côté na
 
 > Ces jeux sont un outil ludique de découverte. Ils ne remplacent pas l'avis d'un professionnel et ne posent aucun diagnostic.
 
+## Progression commune FunisLearn (5 niveaux)
+
+Le moteur partagé est disponible dans `assets/js/funis-progression.js` et son interface dans `assets/css/funis-progression.css`. Il est sans dépendance et conserve les données localement dans `localStorage` sous la clé `funislearn-progress-v1`.
+
+### Contrat d'intégration d'un jeu
+
+Chaque page de jeu doit charger les deux ressources avec des chemins relatifs adaptés à son emplacement, puis initialiser le moteur avec son identifiant stable :
+
+```html
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<script src="../assets/js/funis-progression.js"></script>
+```
+
+```js
+const progression = FunisProgress.init('formes', { totalLevels: 5 });
+const niveauActuel = progression.getCurrentLevel();
+
+// Appeler uniquement après la réussite réelle du niveau.
+// Le score doit refléter la performance du jeu (score et score maximal).
+progression.completeLevel({
+  level: niveauActuel,
+  score: scoreObtenu,
+  maxScore: scoreMaximum
+});
+```
+
+Le moteur expose aussi `selectLevel(level)`, `getProgress()`, `reset()` et les événements `funis:level-completed`, `funis:level-changed` et `funis:all-levels-complete`. Le jeu doit écouter `funis:level-changed` pour générer les exercices correspondant au niveau choisi. Ne pas déclarer un niveau réussi depuis un simple clic ou un chargement de page.
+
+La page de menu lit les données enregistrées et affiche les étoiles et le niveau de progression. Les données restent sur l'appareil et ne sont pas synchronisées entre navigateurs ou appareils. Le moteur respecte `prefers-reduced-motion` et utilise des textes français/arabe selon la langue de la page.
+
+**Important :** le moteur commun et l'affichage du menu sont ajoutés dans la branche de travail, mais chaque jeu doit encore être raccordé à son propre événement de réussite et à sa difficulté pédagogique avant que sa progression soit active de bout en bout. Cette étape doit être faite jeu par jeu pour préserver la logique existante et la voix arabe.
+
+### Vérifications avant publication
+
+- Réussir un niveau et vérifier que les étoiles sont enregistrées.
+- Actualiser la page et confirmer que le niveau débloqué est conservé.
+- Vérifier qu'un niveau verrouillé ne peut pas être sélectionné.
+- Tester les textes en arabe avec `dir="rtl"` et la lecture vocale existante.
+- Tester sur téléphone, clavier et avec la préférence de réduction des animations activée.
+- Effacer les données du site uniquement dans un environnement de test pour vérifier le cas d'une première visite.
+
 ## Lancer en local
 
 ```bash
