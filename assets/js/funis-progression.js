@@ -212,7 +212,7 @@
       const data = result || {};
       const level = Math.floor(clamp(data.level || currentLevel, 1, totalLevels));
       if (level > record.unlocked) return { ok: false, reason: 'locked' };
-      const score = Number(data.score ?? 1);
+      const score = Number(data.score ?? 0);
       const maxScore = Number(data.maxScore ?? 1);
       const earnedStars = starsFor(score, maxScore);
       if (!record.completed.includes(level)) record.completed.push(level);
