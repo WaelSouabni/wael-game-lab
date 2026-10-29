@@ -157,3 +157,18 @@ t('cleanVisited nettoie',()=>{assert.deepEqual(X.cleanVisited(['robot','robot','
 t('cleanProfile : retire les caractères HTML, limite à 12, avatar par défaut',()=>{const p=X.cleanProfile({a:'💥',n:'<b>Sami</b>&"\'` trop long du tout'});assert.equal(p.a,X.AVATARS[0]);assert.ok(!/[<>&"'`]/.test(p.n));assert.ok(p.n.length<=12);assert.equal(X.cleanProfile(null),null);assert.equal(X.cleanProfile({a:'🦊',n:'Lina'}).n,'Lina')});
 console.log(n+' tests réussis');
 }
+
+console.log('\\n== jardin-des-lettres ==');{
+const fs=require('fs'),assert=require('assert');
+const h=fs.readFileSync(path.join(__dirname,'..','games','jardin-des-lettres.html'),'utf8');
+const code=h.split('// LOGIC-START')[1].split('// LOGIC-END')[0];
+const L=new Function(code+';return{ROUNDS,LEVELS,shuffle};')();
+let n=0;const t=(name,f)=>{f();n++;console.log('ok -',name)};
+t('5 niveaux progressifs avec 3 à 6 questions',()=>{assert.equal(L.LEVELS.length,5);assert.deepEqual(L.LEVELS.map(x=>x.count),[3,4,4,5,6])});
+t('tous les niveaux référencent des questions existantes',()=>L.LEVELS.forEach(v=>v.indices.forEach(i=>assert.ok(L.ROUNDS[i]))));
+t('chaque question contient sa réponse parmi les choix',()=>L.ROUNDS.forEach(r=>assert.ok(r.options.includes(r.letter))));
+t('chaque question a des choix distincts',()=>L.ROUNDS.forEach(r=>assert.equal(new Set(r.options).size,r.options.length)));
+t('les mots sont disponibles en arabe standard et en derja',()=>L.ROUNDS.forEach(r=>{assert.ok(r.fusha&&r.derja);assert.ok(r.emoji)}));
+t('le mélange conserve les lettres sans doublons',()=>{const v=L.shuffle(['أ','ب','ت','ث']);assert.equal(v.length,4);assert.deepEqual(v.slice().sort(),['أ','ب','ت','ث'].sort())});
+console.log(n+' tests réussis');
+}
