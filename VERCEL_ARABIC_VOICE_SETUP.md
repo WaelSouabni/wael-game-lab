@@ -1,6 +1,6 @@
 # Voix arabe — Wael Game Lab
 
-Les neuf jeux existants et les nouveaux jeux essaient d'abord le service vocal du site, puis utilisent une voix arabe native du navigateur si elle est disponible.
+Les jeux qui intègrent la lecture vocale essaient d'abord le service vocal du site, puis utilisent une voix arabe native du navigateur si elle est disponible.
 
 ## Configuration nécessaire pour le service vocal
 
