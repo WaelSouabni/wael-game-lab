@@ -7,7 +7,7 @@
 
 ## Fonctionnalités
 
-- 13 mini-jeux accessibles depuis la page d'accueil et le menu des jeux.
+- 14 pages de jeux dans le dépôt ; la page d'accueil présente une sélection de 13 jeux.
 - Interface bilingue français/arabe, avec adaptation de la lecture arabe en RTL.
 - Jeux conçus pour de courtes activités : observation, logique, calcul, lettres, routines, émotions, mémoire et environnement.
 - Interface responsive, utilisable sur ordinateur, tablette et téléphone.
@@ -34,7 +34,7 @@
 | 🇹🇳 Mémoire tunisienne | Retrouver des paires autour du patrimoine tunisien | [memoire-tunisienne.html](games/memoire-tunisienne.html) |
 | ♻️ Héros de l'environnement | Apprendre à trier et à protéger l'environnement | [heros-de-environnement.html](games/heros-de-environnement.html) |
 
-> Le catalogue contient 14 entrées listées ci-dessus. Le nombre affiché dans cette documentation est volontairement à vérifier avec les fichiers du dossier `games/` lors de chaque ajout ou retrait.
+
 
 Le menu de lancement se trouve dans [games/menu-accueil.html](games/menu-accueil.html).
 
