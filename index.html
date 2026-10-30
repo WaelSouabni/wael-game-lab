@@ -77,6 +77,25 @@ noscript a{font-size:1.4rem;font-weight:700}
 @keyframes pop{50%{transform:scale(1.08)}}
 @keyframes pulse{50%{transform:scale(1.05)}}
 @keyframes morph{50%{border-radius:54% 46% 44% 56%/44% 56% 46% 54%;transform:rotate(6deg)}}
+
+/* Arabic: keep the French layout order while rendering Arabic text RTL. */
+html[dir="rtl"] nav,
+html[dir="rtl"] .hero,
+html[dir="rtl"] .cta,
+html[dir="rtl"] .chips,
+html[dir="rtl"] .grid,
+html[dir="rtl"] .pgrid,
+html[dir="rtl"] .skills{direction:ltr}
+html[dir="rtl"] .logo,
+html[dir="rtl"] #brand{direction:ltr;unicode-bidi:isolate;text-align:left}
+html[dir="rtl"] .copy,
+html[dir="rtl"] .band .wrap,
+html[dir="rtl"] .alt .wrap,
+html[dir="rtl"] footer .wrap{direction:rtl;text-align:right}
+html[dir="rtl"] .game,
+html[dir="rtl"] .pc,
+html[dir="rtl"] .skills li{direction:rtl;text-align:right}
+html[dir="rtl"] .lang{direction:rtl}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.js .reveal{opacity:1;transform:none}}
 </style>
 </head>
