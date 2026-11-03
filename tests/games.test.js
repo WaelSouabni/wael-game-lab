@@ -173,3 +173,27 @@ t('les mots sont disponibles en arabe standard et en derja',()=>L.ROUNDS.forEach
 t('le mélange conserve les lettres sans doublons',()=>{const v=L.shuffle(['أ','ب','ت','ث']);assert.equal(v.length,4);assert.deepEqual(v.slice().sort(),['أ','ب','ت','ث'].sort())});
 console.log(n+' tests réussis');
 }
+
+console.log('\n== intégration de la progression commune ==');{
+const fs=require('fs'),assert=require('assert');
+const games=[
+ ['jardin-des-formes.html','formes',5],
+ ['complete-la-suite.html','suite',5],
+ ['guide-le-robot.html','robot',5],
+ ['compte-les-objets.html','compte',6],
+ ['les-lettres.html','lettres',5],
+ ['ma-journee-dans-lordre.html','ordre',5],
+ ['trouve-lombre.html','ombre',6],
+ ['jardin-des-lettres.html','jardin-lettres',5]
+];
+games.forEach(([file,id,total])=>{
+ const h=fs.readFileSync(path.join(__dirname,'..','games',file),'utf8');
+ assert.ok(h.includes("FunisProgress.init('"+id+"'"),file+' initialise le bon identifiant');
+ assert.ok(h.includes('progress.completeLevel('),file+' enregistre une réussite');
+ assert.ok(h.includes('progress.getCurrentLevel()'),file+' reprend le niveau débloqué');
+ assert.ok(h.includes('../assets/js/funis-progression.js'),file+' charge le moteur commun');
+ const match=h.match(/FunisProgress\.init\('[^']+',\{totalLevels:TOTAL_LEVELS/);
+ assert.ok(match,file+' utilise le nombre réel de niveaux');
+});
+console.log(games.length+' jeux connectés au moteur commun');
+}
