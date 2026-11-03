@@ -50,6 +50,8 @@ a.tool.home{display:inline-flex;align-items:center;justify-content:center;text-d
 @keyframes rise{from{opacity:0;transform:translateY(14px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<script src="../assets/js/funis-progression.js"></script>
 </head>
 <body>
 <div class="app">
@@ -90,6 +92,7 @@ const S={lang:'fr',sound:true,step:'pick',sel:[],counts:{}};
 try{const l=localStorage.getItem('cmp-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
 try{S.counts=cleanCounts(JSON.parse(localStorage.getItem('cmp-counts')||'{}'));}catch(e){}
 const t=()=>T[S.lang],li=()=>S.lang==='ar'?2:1;
+const progress=window.FunisProgress.init('compliments',{totalLevels:1,mount:'header'});
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 function voiceFor(l){return VOICES.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(l));}
@@ -173,7 +176,7 @@ else{const e=Object.entries(S.counts);st.innerHTML=`<p class="q">💎 ${x.treasu
 function persist(){try{localStorage.setItem('cmp-counts',JSON.stringify(S.counts));}catch(e){}}
 $('stage').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
 if(a==='tog'){S.sel=toggleSelect(S.sel,b.dataset.v,MAX_PICK);render();const nb=document.querySelector(`[data-v="${b.dataset.v}"]`);if(nb)nb.focus();}
-else if(a==='open'){S.counts=addCounts(S.counts,S.sel);persist();S.step='box';render();say(S.sel.map(k=>Q[k][li()][0]+'. '+Q[k][li()][1]).join(' '));}
+else if(a==='open'){S.counts=addCounts(S.counts,S.sel);persist();progress.completeLevel({level:1,score:1,maxScore:1});S.step='box';render();say(S.sel.map(k=>Q[k][li()][0]+'. '+Q[k][li()][1]).join(' '));}
 else if(a==='again'){S.sel=[];S.step='pick';render();say(t().intro);}
 else if(a==='tre'){S.step='tre';render();}
 else if(a==='wipe'){S.counts={};persist();render();}});
