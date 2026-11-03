@@ -184,16 +184,23 @@ const games=[
  ['les-lettres.html','lettres',5],
  ['ma-journee-dans-lordre.html','ordre',5],
  ['trouve-lombre.html','ombre',6],
- ['jardin-des-lettres.html','jardin-lettres',5]
+ ['jardin-des-lettres.html','jardin-lettres',5],
+ ['mon-humeur-du-jour.html','humeur',1],
+ ['la-boite-a-compliments.html','compliments',1],
+ ['les-lettres-et-les-mots.html','lettres-mots',1],
+ ['defi-de-calcul.html','calcul',1],
+ ['memoire-tunisienne.html','memoire-tunisie',1],
+ ['heros-de-environnement.html','environnement',1]
 ];
 games.forEach(([file,id,total])=>{
  const h=fs.readFileSync(path.join(__dirname,'..','games',file),'utf8');
  assert.ok(h.includes("FunisProgress.init('"+id+"'"),file+' initialise le bon identifiant');
  assert.ok(h.includes('progress.completeLevel('),file+' enregistre une réussite');
- assert.ok(h.includes('progress.getCurrentLevel()') || h.includes('progress.getProgress()'),file+' reprend le niveau débloqué');
  assert.ok(h.includes('../assets/js/funis-progression.js'),file+' charge le moteur commun');
- const match=h.match(/FunisProgress\.init\('[^']+',\{totalLevels:(?:TOTAL_LEVELS|\d+)/);
- assert.ok(match,file+' utilise le nombre réel de niveaux');
+ assert.ok(h.includes('../assets/css/funis-progression.css'),file+' charge les styles communs');
+ const match=h.match(new RegExp("FunisProgress\\.init\\('"+id+"',\\{totalLevels:(?:TOTAL_LEVELS|"+total+")"));
+ assert.ok(match,file+' utilise le nombre de niveaux attendu');
+ if(total>1)assert.ok(h.includes('progress.getCurrentLevel()')||h.includes('progress.getProgress()'),file+' reprend le niveau débloqué');
 });
-console.log(games.length+' jeux connectés au moteur commun');
+console.log(games.length+' jeux raccordés au moteur commun');
 }
