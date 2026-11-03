@@ -97,9 +97,9 @@ function markVisited(list,id){return IDS.includes(id)&&!list.includes(id)?list.c
 function cleanProfile(p){if(!p||typeof p!=='object')return null;const a=AVATARS.includes(p.a)?p.a:AVATARS[0];
 const n=String(p.n||'').replace(/[<>&"'`]/g,'').trim().slice(0,12);return{a,n};}
 // LOGIC-END
-const T={fr:{title:'Mon petit coin de jeux',overview:'Ma progression',started:'jeux commencés',levels:'niveaux réussis',stars:'étoiles gagnées',levelsDone:'niveaux réussis',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
+const T={fr:{title:'Mon petit coin de jeux',overview:'Ma progression',started:'jeux avec progression',levels:'niveaux réussis',stars:'étoiles gagnées',levelsDone:'niveaux réussis',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
  adult:'Pour les adultes : le prénom et les jeux essayés restent sur cet appareil. Aucun compte, aucune publicité, aucun chat. Les jeux s’ouvrent dans un nouvel onglet.'},
-ar:{title:'ركني الصغير للألعاب',overview:'تقدّمي',started:'ألعاب بدأتُها',levels:'مستويات أنجزتها',stars:'نجوم جمعتها',levelsDone:'مستويات مكتملة',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
+ar:{title:'ركني الصغير للألعاب',overview:'تقدّمي',started:'ألعاب لها تقدّم',levels:'مستويات أنجزتها',stars:'نجوم جمعتها',levelsDone:'مستويات مكتملة',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
  adult:'للكبار: يبقى الاسم والألعاب التي جُرّبت على هذا الجهاز. لا حساب ولا إعلانات ولا دردشة. تُفتح الألعاب في تبويب جديد.'}};
 const $=id=>document.getElementById(id);
 const S={lang:'fr',profile:null,visited:[],pick:AVATARS[0],editing:false};
