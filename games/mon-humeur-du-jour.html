@@ -48,6 +48,8 @@ a.tool.home{display:inline-flex;align-items:center;justify-content:center;text-d
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<script src="../assets/js/funis-progression.js"></script>
 </head>
 <body>
 <div class="app">
@@ -90,6 +92,7 @@ const S={lang:'fr',sound:true,step:'pick',emo:null,int:null,helper:null,journal:
 try{const l=localStorage.getItem('hum-lang');if(l==='ar'||l==='fr')S.lang=l;}catch(e){}
 try{const j=JSON.parse(localStorage.getItem('hum-journal')||'[]');if(Array.isArray(j))S.journal=j.filter(x=>EMOTIONS.includes(x.e)&&validIntensity(x.i));}catch(e){}
 const t=()=>T[S.lang];
+const progress=window.FunisProgress.init('humeur',{totalLevels:1,mount:'header'});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){}}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
@@ -135,13 +138,13 @@ function persist(){try{localStorage.setItem('hum-journal',JSON.stringify(S.journ
 async function breathe(){const my=++S.token;
 for(let c=0;c<3;c++){for(const ph of ['in','out']){if(S.token!==my)return;const br=$('br'),tx=$('brt');if(!br)return;
  br.classList.toggle('in',ph==='in');tx.textContent=ph==='in'?t().inhale:t().exhale;if(c===0||ph==='in')say(tx.textContent);await sleep(4000);}}
-if(S.token!==my)return;say(t().well);S.step='thanks';render();}
+if(S.token!==my)return;progress.completeLevel({level:1,score:1,maxScore:1});say(t().well);S.step='thanks';render();}
 function go(step){S.token++;S.step=step;render();}
 $('stage').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
 if(a==='emo'){S.emo=v;say(t().emo[v][2]);go('int');}
 else if(a==='int'){S.int=+v;go('help');say(t().q3);}
 else if(a==='help'){S.helper=v;S.journal=addEntry(S.journal,{d:dayKey(new Date()),e:S.emo,i:S.int,h:v});persist();go('act');if(v==='breathe')breathe();else say(t().help[v][2]);}
-else if(a==='finish'){say(t().thanks);go('thanks');}
+else if(a==='finish'){progress.completeLevel({level:1,score:1,maxScore:1});say(t().thanks);go('thanks');}
 else if(a==='again'){go('pick');say(t().q);}
 else if(a==='journal'){go('journal');}
 else if(a==='wipe'){S.journal=[];persist();go('journal');}});
