@@ -83,9 +83,9 @@ Le dépôt contient un module partagé :
 
 Les données de progression sont conservées dans le stockage local du navigateur. Elles ne sont pas synchronisées entre appareils ou navigateurs.
 
-Jeux actuellement raccordés au moteur commun : Le jardin des formes, Complète la suite, Guide le petit robot, Compte les objets, Les lettres, Ma journée dans l'ordre, Trouve l'ombre et Le jardin des lettres. La validation est enregistrée uniquement après la réussite réelle du niveau. Le menu affiche le nombre de jeux commencés, les niveaux réussis et les étoiles gagnées.
+Les 14 jeux chargent désormais le moteur partagé. Les jeux à niveaux (formes, suites, robot, comptage, lettres, routines, ombres et jardin des lettres) enregistrent les niveaux réussis et permettent de reprendre au dernier niveau débloqué.
 
-Les activités ouvertes ou multi-thèmes (émotions, compliments, mémoire, environnement, calcul et lettres/mots) demandent une intégration spécifique avant d'être comptabilisées comme une progression par niveaux.
+Les activités à session unique (humeur, compliments, lettres et mots, calcul, mémoire tunisienne et environnement) enregistrent une activité terminée après l'action finale ou la réussite de la série. Elles ne sont pas artificiellement présentées comme cinq niveaux. Les données restent locales à l'appareil et le menu affiche les jeux avec progression, les niveaux/activités terminés et les étoiles gagnées.
 
 ## Développement local
 
