@@ -97,9 +97,9 @@ function markVisited(list,id){return IDS.includes(id)&&!list.includes(id)?list.c
 function cleanProfile(p){if(!p||typeof p!=='object')return null;const a=AVATARS.includes(p.a)?p.a:AVATARS[0];
 const n=String(p.n||'').replace(/[<>&"'`]/g,'').trim().slice(0,12);return{a,n};}
 // LOGIC-END
-const T={fr:{title:'Mon petit coin de jeux',overview:'Ma progression',started:'jeux commencés',levels:'niveaux réussis',stars:'étoiles gagnées',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
+const T={fr:{title:'Mon petit coin de jeux',overview:'Ma progression',started:'jeux commencés',levels:'niveaux réussis',stars:'étoiles gagnées',levelsDone:'niveaux réussis',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
  adult:'Pour les adultes : le prénom et les jeux essayés restent sur cet appareil. Aucun compte, aucune publicité, aucun chat. Les jeux s’ouvrent dans un nouvel onglet.'},
-ar:{title:'ركني الصغير للألعاب',overview:'تقدّمي',started:'ألعاب بدأتُها',levels:'مستويات أنجزتها',stars:'نجوم جمعتها',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
+ar:{title:'ركني الصغير للألعاب',overview:'تقدّمي',started:'ألعاب بدأتُها',levels:'مستويات أنجزتها',stars:'نجوم جمعتها',levelsDone:'مستويات مكتملة',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
  adult:'للكبار: يبقى الاسم والألعاب التي جُرّبت على هذا الجهاز. لا حساب ولا إعلانات ولا دردشة. تُفتح الألعاب في تبويب جديد.'}};
 const $=id=>document.getElementById(id);
 const S={lang:'fr',profile:null,visited:[],pick:AVATARS[0],editing:false};
@@ -122,13 +122,15 @@ const totalStars=GAMES.reduce((sum,game)=>sum+Object.values(allProgress[game.id]
 $('overview').innerHTML=`<h2>${t().overview}</h2><div class="overview-grid"><div class="overview-stat"><b>${started}/${GAMES.length}</b><small>${t().started}</small></div><div class="overview-stat"><b>${completedLevels}</b><small>${t().levels}</small></div><div class="overview-stat"><b>⭐ ${totalStars}</b><small>${t().stars}</small></div></div><div class="overview-track" role="progressbar" aria-label="${t().started}" aria-valuemin="0" aria-valuemax="${GAMES.length}" aria-valuenow="${started}"><div class="overview-fill" style="width:${started/GAMES.length*100}%"></div></div>`;
 const li=S.lang==='ar'?'ar':'fr';
 $('menu').innerHTML=GROUPS.map((g,gi)=>`<h2>${g[S.lang==='ar'?1:0]}</h2><div class="grid" style="margin-bottom:18px">${GAMES.filter(x=>x.g===gi).map(x=>
-`<a class="g" style="--c:${x.c}" href="${x.u}" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${(()=>{let p={};try{p=window.FunisProgress.getAllProgress()[x.id]||{};}catch(e){}const done=Array.isArray(p.completed)?p.completed.length:0;const stars=p.stars&&typeof p.stars==="object"?Object.values(p.stars).reduce((a,n)=>a+(Number(n)||0),0):0;return `<small class="gprogress">⭐ ${stars} · ${S.lang==="ar"?"المستوى":"Niveau"} ${Math.min(5,done+1)}/5</small>`;})()}${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
+`<a class="g" style="--c:${x.c}" href="${x.u}" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${(()=>{let p={};try{p=window.FunisProgress.getAllProgress()[x.id]||{};}catch(e){}const done=Array.isArray(p.completed)?p.completed.length:0;const stars=p.stars&&typeof p.stars==="object"?Object.values(p.stars).reduce((a,n)=>a+(Number(n)||0),0):0;return `<small class="gprogress">⭐ ${stars} · ${done} ${t().levelsDone}</small>`;})()}${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
 $('avs').addEventListener('click',e=>{const b=e.target.closest('.avb');if(!b)return;S.pick=b.dataset.a;render();$('nm').focus();});
 $('ok').addEventListener('click',()=>{S.profile=cleanProfile({a:S.pick,n:$('nm').value});save('menu-profile',S.profile);S.editing=false;render();});
 $('nm').addEventListener('keydown',e=>{if(e.key==='Enter')$('ok').click();});
 $('edit').addEventListener('click',()=>{S.editing=true;S.pick=S.profile.a;render();$('nm').value=S.profile.n;});
 $('menu').addEventListener('click',e=>{const a=e.target.closest('.g');if(!a)return;S.visited=markVisited(S.visited,a.dataset.id);save('menu-visited',S.visited);setTimeout(render,300);});
 $('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('menu-lang',S.lang);}catch(e){}render();});
+window.addEventListener('storage',e=>{if(e.key==='funislearn-progress-v1'||e.key===null)render();});
+window.addEventListener('pageshow',()=>render());
 render();
 </script>
 </body>
