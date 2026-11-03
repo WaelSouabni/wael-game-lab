@@ -42,6 +42,15 @@ h2{margin:0 0 10px;font-size:1.3rem}
 .g small{font-size:.92rem;font-weight:500;color:#4b3e63}.g .gprogress{font-size:.82rem;font-weight:700;color:#2f6848;margin-top:5px}
 .g i{position:absolute;top:8px;inset-inline-end:10px;background:var(--leaf);color:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-style:normal;font-weight:700}
 .note{margin:0;font-size:.92rem;color:var(--soft);text-align:center}
+.overview{background:var(--card);border:3px solid var(--ink);border-radius:24px;padding:16px;display:grid;gap:10px}
+.overview h2{margin:0;font-size:1.15rem}
+.overview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.overview-stat{background:var(--bg);border-radius:16px;padding:10px;text-align:center;min-width:0}
+.overview-stat b{display:block;font-size:1.5rem;line-height:1.2}
+.overview-stat small{display:block;color:var(--soft);font-size:.82rem;line-height:1.25}
+.overview-track{height:12px;border-radius:99px;background:var(--bg);overflow:hidden}
+.overview-fill{height:100%;width:0;background:var(--leaf);border-radius:inherit;transition:width .3s ease}
+@media(max-width:380px){.overview-grid{grid-template-columns:1fr}}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -57,6 +66,7 @@ h2{margin:0 0 10px;font-size:1.3rem}
     <button class="big" id="ok"></button>
   </section>
   <section class="hello" id="hello" hidden><span class="av" id="hav"></span><p id="hmsg"></p><button class="tool" id="edit" aria-label="✏️">✏️</button></section>
+  <section class="overview" id="overview" hidden aria-live="polite"></section>
   <main id="menu"></main>
   <p class="note" id="adult"></p>
 </div>
@@ -87,9 +97,9 @@ function markVisited(list,id){return IDS.includes(id)&&!list.includes(id)?list.c
 function cleanProfile(p){if(!p||typeof p!=='object')return null;const a=AVATARS.includes(p.a)?p.a:AVATARS[0];
 const n=String(p.n||'').replace(/[<>&"'`]/g,'').trim().slice(0,12);return{a,n};}
 // LOGIC-END
-const T={fr:{title:'Mon petit coin de jeux',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
+const T={fr:{title:'Mon petit coin de jeux',overview:'Ma progression',started:'jeux commencés',levels:'niveaux réussis',stars:'étoiles gagnées',sq:'Choisis ton ami !',sl:'Ton prénom ou un surnom :',ok:'C’est parti !',hi:n=>n?`Bonjour ${n} !`:'Bonjour !',sub:'À quoi veux-tu jouer ?',tried:'déjà essayé',
  adult:'Pour les adultes : le prénom et les jeux essayés restent sur cet appareil. Aucun compte, aucune publicité, aucun chat. Les jeux s’ouvrent dans un nouvel onglet.'},
-ar:{title:'ركني الصغير للألعاب',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
+ar:{title:'ركني الصغير للألعاب',overview:'تقدّمي',started:'ألعاب بدأتُها',levels:'مستويات أنجزتها',stars:'نجوم جمعتها',sq:'اختر صديقك!',sl:'اسمك أو لقب:',ok:'هيا بنا!',hi:n=>n?`مرحباً ${n}!`:'مرحباً!',sub:'بماذا تريد أن تلعب؟',tried:'جرّبتها من قبل',
  adult:'للكبار: يبقى الاسم والألعاب التي جُرّبت على هذا الجهاز. لا حساب ولا إعلانات ولا دردشة. تُفتح الألعاب في تبويب جديد.'}};
 const $=id=>document.getElementById(id);
 const S={lang:'fr',profile:null,visited:[],pick:AVATARS[0],editing:false};
@@ -101,10 +111,15 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function render(){const d=document.documentElement;d.lang=S.lang;d.dir=S.lang==='ar'?'rtl':'ltr';document.title=t().title;
 $('title').textContent=t().title;$('lang').textContent=S.lang==='fr'?'العربية':'Français';$('adult').textContent=t().adult;
-const setup=!S.profile||S.editing;$('setup').hidden=!setup;$('hello').hidden=setup;$('menu').hidden=setup;
+const setup=!S.profile||S.editing;$('setup').hidden=!setup;$('hello').hidden=setup;$('overview').hidden=setup;$('menu').hidden=setup;
 if(setup){$('sq').textContent=t().sq;$('sl').textContent=t().sl;$('ok').textContent=t().ok;
  $('avs').innerHTML=AVATARS.map(a=>`<button class="avb" data-a="${a}" aria-pressed="${a===S.pick}">${a}</button>`).join('');return;}
 $('hav').textContent=S.profile.a;$('hmsg').innerHTML=`${esc(t().hi(S.profile.n))}<small>${t().sub}</small>`;
+const allProgress=window.FunisProgress.getAllProgress();
+const started=GAMES.filter(game=>Array.isArray(allProgress[game.id]?.completed)&&allProgress[game.id].completed.length>0).length;
+const completedLevels=GAMES.reduce((sum,game)=>sum+(Array.isArray(allProgress[game.id]?.completed)?allProgress[game.id].completed.length:0),0);
+const totalStars=GAMES.reduce((sum,game)=>sum+Object.values(allProgress[game.id]?.stars||{}).reduce((n,value)=>n+(Number(value)||0),0),0);
+$('overview').innerHTML=`<h2>${t().overview}</h2><div class="overview-grid"><div class="overview-stat"><b>${started}/${GAMES.length}</b><small>${t().started}</small></div><div class="overview-stat"><b>${completedLevels}</b><small>${t().levels}</small></div><div class="overview-stat"><b>⭐ ${totalStars}</b><small>${t().stars}</small></div></div><div class="overview-track" role="progressbar" aria-label="${t().overview}" aria-valuemin="0" aria-valuemax="70" aria-valuenow="${Math.min(70,completedLevels)}"><div class="overview-fill" style="width:${Math.min(100,completedLevels/70*100)}%"></div></div>`;
 const li=S.lang==='ar'?'ar':'fr';
 $('menu').innerHTML=GROUPS.map((g,gi)=>`<h2>${g[S.lang==='ar'?1:0]}</h2><div class="grid" style="margin-bottom:18px">${GAMES.filter(x=>x.g===gi).map(x=>
 `<a class="g" style="--c:${x.c}" href="${x.u}" data-id="${x.id}"><span>${x.e}</span><b>${x[li][0]}</b><small>${x[li][1]}</small>${(()=>{let p={};try{p=window.FunisProgress.getAllProgress()[x.id]||{};}catch(e){}const done=Array.isArray(p.completed)?p.completed.length:0;const stars=p.stars&&typeof p.stars==="object"?Object.values(p.stars).reduce((a,n)=>a+(Number(n)||0),0):0;return `<small class="gprogress">⭐ ${stars} · ${S.lang==="ar"?"المستوى":"Niveau"} ${Math.min(5,done+1)}/5</small>`;})()}${S.visited.includes(x.id)?`<i title="${t().tried}" aria-label="${t().tried}">✓</i>`:''}</a>`).join('')}</div>`).join('');}
