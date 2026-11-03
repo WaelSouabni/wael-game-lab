@@ -1,18 +1,18 @@
 # 🎈 Wael Game Lab
 
-**Wael Game Lab** (également présenté sous le nom **FunisLearn**) est un projet personnel de mini-jeux éducatifs gratuits destiné principalement aux enfants à partir de 5 ans. Les activités sont proposées en français et en arabe.
+**Wael Game Lab** (également présenté sous le nom **FunisLearn**) est un projet personnel de mini-jeux éducatifs gratuits destiné principalement aux enfants de 3 à 6 ans. Les activités sont proposées en français et en arabe.
 
 🌐 **Site en ligne :** https://wael-game-lab.vercel.app  
 💻 **Dépôt :** https://github.com/WaelSouabni/wael-game-lab
 
 ## Fonctionnalités
 
-- 14 pages de jeux dans le dépôt ; la page d'accueil présente une sélection de 13 jeux.
+- 14 jeux dans le dépôt et 14 jeux référencés dans le menu et la page d'accueil.
 - Interface bilingue français/arabe, avec adaptation de la lecture arabe en RTL.
 - Jeux conçus pour de courtes activités : observation, logique, calcul, lettres, routines, émotions, mémoire et environnement.
 - Interface responsive, utilisable sur ordinateur, tablette et téléphone.
 - Pas de publicité, de compte enfant, de chat ni d'installation obligatoire.
-- Progression locale sur l'appareil pour les fonctionnalités qui l'utilisent.
+- Progression et étoiles conservées localement sur l'appareil lorsque le jeu est raccordé au moteur partagé ; le menu présente un récapitulatif des progrès enregistrés.
 - Lecture vocale arabe via le service serveur Vercel lorsqu'il est configuré ; une voix native du navigateur peut servir de solution de repli si elle existe.
 
 ## Catalogue des jeux
@@ -52,7 +52,7 @@ Le menu de lancement se trouve dans [games/menu-accueil.html](games/menu-accueil
 ├── games/                        # Pages HTML des jeux et menu
 ├── tests/
 │   └── games.test.js              # Tests automatisés Node.js
-├── index.html                     # Page d'accueil bilingue
+├── index.html                     # Page d'accueil bilingue (14 jeux)
 ├── package.json
 └── VERCEL_ARABIC_VOICE_SETUP.md   # Configuration et diagnostic TTS
 ```
