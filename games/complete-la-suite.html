@@ -53,6 +53,8 @@ a.tool.home{display:inline-flex;align-items:center;justify-content:center;text-d
 @keyframes pulse{50%{transform:scale(1.12)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<script src="../assets/js/funis-progression.js"></script>
 </head>
 <body>
 <div class="app">
@@ -197,14 +199,15 @@ $('dots').innerHTML=Array.from({length:TOTAL_LEVELS},(_,i)=>`<span class="dot ${
 function render(){const p=S.p;
 $('band').innerHTML=p.seq.map((s,i)=>i<p.start||i<S.idx?`<div class="cell ${i===S.last?'fill':''}" data-i="${i}">${svg(s)}</div>`:`<div class="cell q ${i===S.idx?'now':''}" data-i="${i}" aria-label="?">?</div>`).join('');
 $('choices').innerHTML=p.choices.map(c=>`<button class="choice" data-key="${c.key}" aria-label="${NAMES[S.lang][c.shape]}">${svg(c)}</button>`).join('');}
-function startLevel(n){S.level=n;S.p=buildPattern(n);S.idx=S.p.start;S.errors=0;S.hints=0;S.errAt=0;S.last=-1;
+const progress=window.FunisProgress.init('suite',{totalLevels:TOTAL_LEVELS,mount:'header'});
+function startLevel(n){if(n<=progress.getProgress().unlocked)progress.selectLevel(n);S.level=n;S.p=buildPattern(n);S.idx=S.p.start;S.errors=0;S.hints=0;S.errAt=0;S.last=-1;
 $('next').hidden=true;$('end').hidden=true;$('game').hidden=false;renderDots();render();say(t().hello);}
 function choose(key){if(S.idx>=S.p.seq.length)return;
 if(isCorrect(S.p,S.idx,key)){S.last=S.idx;S.idx++;S.errAt=0;render();
  if(S.idx>=S.p.seq.length)finishLevel();else say(pick(t().ok));}
 else{S.errors++;S.errAt++;const c=document.querySelector(`.cell[data-i="${S.idx}"]`);if(c){c.classList.add('wrong');setTimeout(()=>c.classList.remove('wrong'),500);}
  if(needsHint(S.errAt)){S.hints++;const g=document.querySelector(`.choice[data-key="${S.p.seq[S.idx].key}"]`);if(g)g.classList.add('hint');say(t().hint);}else say(pick(t().retry));}}
-function finishLevel(){S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
+function finishLevel(){progress.completeLevel({level:S.level,score:Math.max(0,100-(S.errors||0)*10-(S.hints||0)*15),maxScore:100,celebrate:false});S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
 if(S.level>=TOTAL_LEVELS){finalBadges(S.done).forEach(b=>S.badges.add(b));showEnd();return;}
 say(t().levelDone);$('next').hidden=false;$('next').focus();}
 function showEnd(){$('game').hidden=true;$('end').hidden=false;
@@ -214,7 +217,7 @@ $('next').addEventListener('click',()=>startLevel(S.level+1));
 $('again').addEventListener('click',()=>{S.badges=new Set();S.done=0;startLevel(1);});
 $('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
 $('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('cls-lang',S.lang);}catch(e){}applyLang();if(!$('end').hidden)showEnd();else{renderDots();render();say(t().hello);}});
-applyLang();startLevel(1);
+applyLang();startLevel(progress.getCurrentLevel());
 </script>
 </body>
 </html>
