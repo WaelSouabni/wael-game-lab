@@ -148,9 +148,10 @@ const h=fs.readFileSync(path.join(__dirname,'..','games','menu-accueil.html'),'u
 const code=h.split('// LOGIC-START')[1].split('// LOGIC-END')[0];
 const X=new Function(code+';return{GAMES,GROUPS,AVATARS,IDS,cleanVisited,markVisited,cleanProfile};')();
 let n=0;const t=(m,f)=>{f();n++;console.log('ok -',m)};
-t('13 jeux, ids uniques',()=>{assert.equal(X.GAMES.length,13);assert.equal(new Set(X.IDS).size,9)});
+t('14 jeux, 14 identifiants uniques',()=>{assert.equal(X.GAMES.length,14);assert.equal(new Set(X.IDS).size,14)});
 t('chaque jeu a un lien d’artefact, un emoji, une couleur et des textes FR+AR',()=>X.GAMES.forEach(g=>{assert.match(g.u,/^[a-z-]+\.html$/);assert.ok(require('fs').existsSync(path.join(__dirname,'..','games',g.u)),'fichier manquant : '+g.u);assert.ok(g.e&&g.c);assert.equal(g.fr.length,2);assert.equal(g.ar.length,2);g.fr.concat(g.ar).forEach(x=>assert.ok(x))}));
-t('liens tous différents',()=>assert.equal(new Set(X.GAMES.map(g=>g.u)).size,9));
+t('14 liens de jeux tous différents',()=>assert.equal(new Set(X.GAMES.map(g=>g.u)).size,14));
+t('la page d’accueil référence aussi le jardin des lettres',()=>{const home=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');assert.ok(home.includes("['jardin-des-lettres'"));});
 t('chaque jeu appartient à un groupe existant, aucun groupe vide',()=>{X.GAMES.forEach(g=>assert.ok(g.g>=0&&g.g<X.GROUPS.length));X.GROUPS.forEach((_,i)=>assert.ok(X.GAMES.some(g=>g.g===i)))});
 t('markVisited : ajoute sans doublon, ignore les inconnus',()=>{let v=X.markVisited([],'robot');v=X.markVisited(v,'robot');assert.deepEqual(v,['robot']);assert.deepEqual(X.markVisited(v,'zzz'),['robot'])});
 t('cleanVisited nettoie',()=>{assert.deepEqual(X.cleanVisited(['robot','robot','x',3]),['robot']);assert.deepEqual(X.cleanVisited('abc'),[])});
