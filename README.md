@@ -81,7 +81,11 @@ Le dépôt contient un module partagé :
 - `assets/js/funis-progression.js`
 - `assets/css/funis-progression.css`
 
-Les données de progression sont conservées dans le stockage local du navigateur. Elles ne sont pas synchronisées entre appareils ou navigateurs. Avant de présenter la progression comme active dans un jeu, vérifier que cette page appelle le module au bon moment, après une réussite réelle, et que le menu affiche les données attendues. La présence du module partagé ne signifie pas à elle seule que chaque jeu est entièrement raccordé.
+Les données de progression sont conservées dans le stockage local du navigateur. Elles ne sont pas synchronisées entre appareils ou navigateurs.
+
+Jeux actuellement raccordés au moteur commun : Le jardin des formes, Complète la suite, Guide le petit robot, Compte les objets, Les lettres, Ma journée dans l'ordre, Trouve l'ombre et Le jardin des lettres. La validation est enregistrée uniquement après la réussite réelle du niveau. Le menu affiche le nombre de jeux commencés, les niveaux réussis et les étoiles gagnées.
+
+Les activités ouvertes ou multi-thèmes (émotions, compliments, mémoire, environnement, calcul et lettres/mots) demandent une intégration spécifique avant d'être comptabilisées comme une progression par niveaux.
 
 ## Développement local
 
