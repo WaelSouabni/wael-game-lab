@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wael Game Lab – Des jeux pour grandir</title>
-<meta name="description" content="Des mini-jeux gratuits pour les enfants de 5 ans et plus, en français et en arabe : observation, logique, nombres, lettres, émotions et confiance en soi. Sans pub, sans compte.">
+<meta name="description" content="Des mini-jeux gratuits pour les enfants de 3 à 6 ans, en français et en arabe : observation, logique, nombres, lettres, émotions et confiance en soi. Sans pub, sans compte.">
 <meta name="google-site-verification" content="d637ae527040dc1b" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
@@ -140,6 +140,7 @@ const G=[
 ['trouve-lombre','🕵️','#d8c9ff',['Trouve l’ombre','Bien observer'],['اعثر على الظل','ملاحظة دقيقة']],
 ['compte-les-objets','🔢','#d3eb9a',['Compte les objets','Compter jusqu’à 10'],['عُدّ الأشياء','العدّ حتى 10']],
 ['les-lettres','🔤','#b5e6f2',['Les lettres','Lettres françaises et arabes'],['الحروف','حروف عربية وفرنسية']],
+['jardin-des-lettres','🌼','#c6ebcd',['Le jardin des lettres','Découvrir les lettres arabes'],['حديقة الحروف','نكتشف الحروف العربية']],
 ['ma-journee-dans-lordre','⏰','#c6ebcd',['Ma journée dans l’ordre','Routines et temps'],['يومي بالترتيب','الروتين والوقت']],
 ['mon-humeur-du-jour','😊','#fbd3cb',['Mon humeur du jour','Mettre des mots sur ses émotions'],['مزاجي اليوم','التعبير عن مشاعري']],
 ['la-boite-a-compliments','🎁','#ffe49a',['La boîte à compliments','Découvrir ses forces'],['صندوق المجاملات','اكتشاف نقاط قوتي']],
@@ -148,14 +149,14 @@ const G=[
 ['memoire-tunisienne','🇹🇳','#ffe0a3',['Mémoire tunisienne','Paires et patrimoine'],['ذاكرة تونس','صور من تونس']],
 ['heros-de-environnement','♻️','#c6ebcd',['Héros de l’environnement','Trier et protéger'],['بطل البيئة','فرز وحماية']]];
 const I={
-fr:{kicker:'Des jeux pour les 5 ans et plus',tag:'Des mini-jeux pour jouer, découvrir ses talents et prendre confiance en soi.',cta1:'🎮 Jouer maintenant',cta2:'👨‍👩‍👧 Pour les parents',bubble:'Salut ! On joue ?',
- chips:['5 ans et +','Français et عربي','Zéro pub','Sans compte'],gamesT:'Choisis ton jeu',gamesS:'Chaque jeu dure quelques minutes. Pas de « perdu », juste « essaie encore » !',
+fr:{kicker:'Des jeux pour les 3 à 6 ans',tag:'Des mini-jeux pour jouer, découvrir ses talents et prendre confiance en soi.',cta1:'🎮 Jouer maintenant',cta2:'👨‍👩‍👧 Pour les parents',bubble:'Salut ! On joue ?',
+ chips:['3–6 ans','Français et عربي','Zéro pub','Sans compte'],gamesT:'Choisis ton jeu',gamesS:'Chaque jeu dure quelques minutes. Pas de « perdu », juste « essaie encore » !',
  parentsT:'Pour les parents et les éducateurs',parentsS:'Un petit laboratoire de jeux pensé pour valoriser l’effort, pas la performance.',
  cards:[['🛡️','Sans pub, sans compte, sans chat','Aucun contact avec des inconnus, aucun achat, aucune publicité.'],['🔒','Vie privée','Le prénom, la langue et les progrès restent sur l’appareil de l’enfant.'],['🌱','Pas d’échec punitif','Une erreur donne un indice et un encouragement. Les badges récompensent l’effort.'],['🗣️','Bilingue, avec voix','Tout est en français et en arabe, avec une voix qui lit les consignes (selon l’appareil).']],
  skillsT:'Compétences travaillées',skills:['Observation','Logique','Nombres','Lettres','Routines','Émotions','Confiance en soi'],
  disc:'Ces jeux sont un outil ludique de découverte. Ils ne remplacent pas l’avis d’un professionnel et ne posent aucun diagnostic.',foot:'Un projet personnel de Wael Souabni',go:'Jouer'},
-ar:{kicker:'ألعاب للأطفال من 5 سنوات',tag:'ألعاب صغيرة لتلعب وتكتشف مواهبك وتثق بنفسك.',cta1:'🎮 العب الآن',cta2:'👨‍👩‍👧 للآباء',bubble:'مرحباً! هل نلعب؟',
- chips:['من 5 سنوات','Français و عربي','بلا إعلانات','بلا حساب'],gamesT:'اختر لعبتك',gamesS:'كل لعبة تدوم بضع دقائق. لا يوجد «خسرت»، فقط «جرّب مرة أخرى»!',
+ar:{kicker:'ألعاب للأطفال من 3 إلى 6 سنوات',tag:'ألعاب صغيرة لتلعب وتكتشف مواهبك وتثق بنفسك.',cta1:'🎮 العب الآن',cta2:'👨‍👩‍👧 للآباء',bubble:'مرحباً! هل نلعب؟',
+ chips:['من 3 إلى 6 سنوات','Français و عربي','بلا إعلانات','بلا حساب'],gamesT:'اختر لعبتك',gamesS:'كل لعبة تدوم بضع دقائق. لا يوجد «خسرت»، فقط «جرّب مرة أخرى»!',
  parentsT:'للآباء والمربّين',parentsS:'مختبر ألعاب صغير يقدّر الجهد وليس الأداء.',
  cards:[['🛡️','بلا إعلانات ولا حساب ولا دردشة','لا اتصال بغرباء، ولا مشتريات، ولا إعلانات.'],['🔒','الخصوصية','الاسم واللغة والتقدّم تبقى على جهاز الطفل.'],['🌱','لا عقاب على الخطأ','الخطأ يعطي تلميحاً وتشجيعاً، والشارات تكافئ الجهد.'],['🗣️','ثنائي اللغة مع الصوت','كل شيء بالعربية والفرنسية، مع صوت يقرأ التعليمات (حسب الجهاز).']],
  skillsT:'المهارات التي تنمّيها',skills:['الملاحظة','المنطق','الأرقام','الحروف','الروتين','المشاعر','الثقة بالنفس'],
