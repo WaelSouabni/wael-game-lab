@@ -53,6 +53,8 @@ a.tool.home{display:inline-flex;align-items:center;justify-content:center;text-d
 @keyframes pop{50%{transform:scale(1.15)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="../assets/css/funis-progression.css">
+<script src="../assets/js/funis-progression.js"></script>
 </head>
 <body>
 <div class="app">
@@ -217,7 +219,8 @@ b.innerHTML=h;
 $('prog').innerHTML=S.prog.map(d=>`<span class="step" aria-label="${t().dirs[d]}">${GLY[d]}</span>`).join('');
 $('pad').innerHTML=GLY.map((g,d)=>`<button class="arrow" style="grid-area:${AREA[d]}" data-d="${d}" aria-label="${t().dirs[d]}" ${S.running?'disabled':''}>${g}</button>`).join('');
 ['undo','clear','run'].forEach(k=>$(k).disabled=S.running);}
-function startLevel(n){S.level=n;S.prog=[];S.fails=0;S.hints=0;S.running=false;S.trail=null;S.pos={...L().start};
+const progress=window.FunisProgress.init('robot',{totalLevels:TOTAL_LEVELS,mount:'header'});
+function startLevel(n){if(n<=progress.getProgress().unlocked)progress.selectLevel(n);S.level=n;S.prog=[];S.fails=0;S.hints=0;S.running=false;S.trail=null;S.pos={...L().start};
 $('next').hidden=true;$('end').hidden=true;$('game').hidden=false;renderDots();render();say(t().hello);}
 async function run(){if(S.running)return;if(!S.prog.length){say(t().empty);return;}
 S.running=true;S.trail=null;render();const r=simulate(L(),S.prog);
@@ -227,7 +230,7 @@ S.fails++;await sleep(500);
 if(r.status==='bump')say(t().bump);else say(pick(t().retry));
 await sleep(700);S.pos={...L().start};S.running=false;
 if(needsHint(S.fails)){S.hints++;const m=solve(L());S.trail=simulate(L(),m).path;render();say(t().hint);setTimeout(()=>{S.trail=null;if(!S.running)render();},3500);}else render();}
-function finishLevel(){S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
+function finishLevel(){progress.completeLevel({level:S.level,score:Math.max(0,100-(S.fails||0)*10-(S.hints||0)*15),maxScore:100,celebrate:false});S.done=Math.max(S.done,S.level);badgesFor(S).forEach(b=>S.badges.add(b));
 if(S.level>=TOTAL_LEVELS){finalBadges(S.done).forEach(b=>S.badges.add(b));say(t().ok);setTimeout(showEnd,1500);return;}
 say(t().ok+' '+t().levelDone);$('next').hidden=false;$('next').focus();}
 function showEnd(){$('game').hidden=true;$('end').hidden=false;
@@ -240,7 +243,7 @@ $('next').addEventListener('click',()=>startLevel(S.level+1));
 $('again').addEventListener('click',()=>{S.badges=new Set();S.done=0;startLevel(1);});
 $('snd').addEventListener('click',()=>{S.sound=!S.sound;if(!S.sound&&'speechSynthesis' in window)speechSynthesis.cancel();applyLang();});
 $('lang').addEventListener('click',()=>{S.lang=S.lang==='fr'?'ar':'fr';try{localStorage.setItem('rob-lang',S.lang);}catch(e){}applyLang();if(!$('end').hidden)showEnd();else{renderDots();render();say(t().hello);}});
-applyLang();startLevel(1);
+applyLang();startLevel(progress.getCurrentLevel());
 </script>
 </body>
 </html>
