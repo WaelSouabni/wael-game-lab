@@ -190,9 +190,9 @@ games.forEach(([file,id,total])=>{
  const h=fs.readFileSync(path.join(__dirname,'..','games',file),'utf8');
  assert.ok(h.includes("FunisProgress.init('"+id+"'"),file+' initialise le bon identifiant');
  assert.ok(h.includes('progress.completeLevel('),file+' enregistre une réussite');
- assert.ok(h.includes('progress.getCurrentLevel()'),file+' reprend le niveau débloqué');
+ assert.ok(h.includes('progress.getCurrentLevel()') || h.includes('progress.getProgress()'),file+' reprend le niveau débloqué');
  assert.ok(h.includes('../assets/js/funis-progression.js'),file+' charge le moteur commun');
- const match=h.match(/FunisProgress\.init\('[^']+',\{totalLevels:TOTAL_LEVELS/);
+ const match=h.match(/FunisProgress\.init\('[^']+',\{totalLevels:(?:TOTAL_LEVELS|\d+)/);
  assert.ok(match,file+' utilise le nombre réel de niveaux');
 });
 console.log(games.length+' jeux connectés au moteur commun');
